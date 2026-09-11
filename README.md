@@ -9,9 +9,9 @@ A Chartered Accountant consultancy website backend API built with FastAPI, Pydan
    cp .env.example .env
    ```
 2. Configure your environment variables in `.env`:
-   - `SUPABASE_URL`: Your Supabase Project URL
-   - `SUPABASE_KEY`: Supabase anon key for public requests
-   - `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key for administrative operations
+   - `SUPABASE_URL`: Your Supabase Project bare URL (e.g. `https://dlqxzjzjinqgzogbiiaa.supabase.co`, no trailing `/rest/v1/`)
+   - `SUPABASE_PUBLISHABLE_KEY`: Public/anon publishable key (for client reads/writes protected by RLS)
+   - `SUPABASE_SECRET_KEY`: Service role secret key (used only in backend admin operations)
    - `FRONTEND_ORIGIN`: Frontend origin allowed by CORS (e.g. `http://localhost:3000`)
    - `RESEND_API_KEY`: API key for Resend email service (optional; if not set, email notifications will be logged to stdout)
    - `ADMIN_NOTIFY_EMAIL`: Target email address to receive contact form notifications

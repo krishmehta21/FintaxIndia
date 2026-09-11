@@ -2,9 +2,9 @@ from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    SUPABASE_URL: str = "https://dummy-fintax.supabase.co"
-    SUPABASE_KEY: str = "dummy_key"
-    SUPABASE_SERVICE_ROLE_KEY: str = "dummy_service_key"
+    SUPABASE_URL: str = "https://your-supabase-project.supabase.co"
+    SUPABASE_PUBLISHABLE_KEY: str = ""
+    SUPABASE_SECRET_KEY: str = ""
     FRONTEND_ORIGIN: str = "http://localhost:3000"
     ENVIRONMENT: str = "development"
     
