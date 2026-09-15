@@ -13,4 +13,4 @@ jobs:
       - name: Ping Backend API
         run: |
           # Pinging the Render URL to keep the instance warm
-          curl -s -o /dev/null -w "%{http_code}" https://fintaxindia.onrender.com/
+          curl -s -o /dev/null -w "%{http_code}" https://fintaxindia.onrender.com/health
