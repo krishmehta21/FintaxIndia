@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
@@ -16,19 +16,28 @@ const getImageForService = (index) => {
 
 export const ServicesShowcase = ({ services }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
 
   if (!services || services.length === 0) return null;
 
   const activeService = services[activeIndex];
+  const MotionLink = motion(Link);
+  
+  const magneticProps = shouldReduceMotion ? {} : {
+    whileHover: { scale: 1.05, y: -2 },
+    whileTap: { scale: 0.95 },
+    transition: { type: "spring", stiffness: 400, damping: 10 }
+  };
 
   return (
     <div className="w-full max-w-6xl mx-auto">
       {/* Tabs */}
-      <div 
-        className="flex overflow-x-auto hide-scrollbar gap-2 mb-8 pb-4 border-b border-gray-200"
-        role="tablist"
-        aria-label="Service Categories"
-      >
+      <div className="relative mb-8 pb-4 border-b border-gray-200">
+        <div 
+          className="flex overflow-x-auto hide-scrollbar gap-2 pr-12"
+          role="tablist"
+          aria-label="Service Categories"
+        >
         {services.map((service, index) => {
           const isActive = activeIndex === index;
           return (
@@ -49,7 +58,7 @@ export const ServicesShowcase = ({ services }) => {
                 }
               }}
               className={`relative px-6 py-3 text-sm md:text-base font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                isActive ? 'text-primary' : 'text-muted hover:text-primary'
+                isActive ? 'text-primary' : 'text-gray-500 hover:text-primary'
               }`}
             >
               {isActive && (
@@ -64,10 +73,13 @@ export const ServicesShowcase = ({ services }) => {
             </button>
           );
         })}
+        </div>
+        {/* Scroll indicator mask */}
+        <div className="absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
       </div>
 
       {/* Content Panel */}
-      <div className="relative min-h-[400px] md:min-h-[500px] overflow-hidden rounded-md bg-gray-900">
+      <div className="relative overflow-hidden rounded-md bg-gray-900">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIndex}
@@ -78,10 +90,10 @@ export const ServicesShowcase = ({ services }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute inset-0 flex flex-col md:flex-row"
+            className="flex flex-col md:flex-row min-h-[400px]"
           >
             {/* Image Side */}
-            <div className="relative w-full md:w-1/2 h-64 md:h-full overflow-hidden">
+            <div className="relative w-full md:w-1/2 h-64 md:h-auto overflow-hidden">
               <img 
                 src={getImageForService(activeIndex)} 
                 alt={activeService.title} 
@@ -91,18 +103,19 @@ export const ServicesShowcase = ({ services }) => {
             </div>
             
             {/* Content Side */}
-            <div className="relative w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-primary">
+            <div className="relative w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center bg-primary">
               <h3 className="text-3xl font-bold text-white mb-4">{activeService.title}</h3>
               <p className="text-gray-300 text-lg mb-8 leading-relaxed">
                 {activeService.short_description}
               </p>
               <div>
-                <Link 
+                <MotionLink 
                   to={`/services/${activeService.slug}`} 
                   className="btn btn-outline text-white border-white hover:bg-white hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  {...magneticProps}
                 >
                   Explore Service <ArrowRight className="ml-2" size={18} />
-                </Link>
+                </MotionLink>
               </div>
             </div>
           </motion.div>

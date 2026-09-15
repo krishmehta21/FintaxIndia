@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-const Counter = ({ end, duration = 2.5, suffix = '' }) => {
+const Counter = ({ end, duration = 2.5, suffix = '', active = false }) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    if (!active) return;
     let startTimestamp = null;
+    let rafId;
     const step = (timestamp) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / (duration * 1000), 1);
-      // easeOutExpo
       const easeOut = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
       setCount(Math.floor(easeOut * end));
-      
       if (progress < 1) {
-        window.requestAnimationFrame(step);
+        rafId = window.requestAnimationFrame(step);
       }
     };
-    window.requestAnimationFrame(step);
-  }, [end, duration]);
+    rafId = window.requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
+  }, [end, duration, active]);
 
   return <span>{count.toLocaleString()}{suffix}</span>;
 };
@@ -42,15 +43,12 @@ export const StatsBand = () => {
           {stats.map((stat, index) => (
             <div key={index} className="px-4 py-6 md:py-0">
               <div className="text-4xl md:text-5xl font-heading font-bold text-accent mb-2">
-                {inView ? (
-                  <Counter 
-                    end={stat.value} 
-                    duration={2.5} 
-                    suffix={stat.suffix} 
-                  />
-                ) : (
-                  <span>0{stat.suffix}</span>
-                )}
+                <Counter 
+                  end={stat.value} 
+                  duration={2.5} 
+                  suffix={stat.suffix}
+                  active={inView}
+                />
               </div>
               <div className="text-gray-300 font-medium tracking-wide uppercase text-sm">
                 {stat.label}

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { api } from '../api';
 import { Spinner } from '../components/Spinner';
 import { Plus, Minus } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useMotionVariants } from '../utils/motion';
 
 export const QA = () => {
@@ -10,6 +10,21 @@ export const QA = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const mv = useMotionVariants();
+  const shouldReduceMotion = useReducedMotion();
+  
+  // Hero parallax
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  
+  const magneticProps = shouldReduceMotion ? {} : {
+    whileHover: { scale: 1.05, y: -2 },
+    whileTap: { scale: 0.95 },
+    transition: { type: "spring", stiffness: 400, damping: 10 }
+  };
   
   // Filtering
   const [searchQuery, setSearchQuery] = useState('');
@@ -78,26 +93,31 @@ export const QA = () => {
   return (
     <div className="bg-white">
       {/* Hero Header for Q&A */}
-      <section className="bg-primary text-white py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-dark"></div>
+      <section ref={heroRef} className="bg-primary text-white py-16 md:py-24 relative overflow-hidden">
+        <motion.div 
+          className="absolute inset-0 z-0 origin-top"
+          style={{ y: shouldReduceMotion ? 0 : y }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary to-primary-dark"></div>
+        </motion.div>
         <div className="container relative z-10 max-w-4xl text-center">
           <motion.h1 
-            className="text-4xl md:text-5xl font-bold mb-6 text-white"
+            className="text-4xl md:text-6xl font-bold mb-4 text-white"
             variants={mv.headingRise}
             initial="hidden"
             whileInView="visible"
             viewport={mv.viewportConfig}
           >
-            Questions & Answers
+            Knowledge Base
           </motion.h1>
           <motion.p 
-            className="text-xl text-gray-300"
+            className="text-lg md:text-xl text-gray-300"
             variants={mv.textFadeDelay}
             initial="hidden"
             whileInView="visible"
             viewport={mv.viewportConfig}
           >
-            Official clarifications on common financial and regulatory queries.
+            Authoritative guidance on taxation, compliance, and corporate structuring.
           </motion.p>
         </div>
       </section>
@@ -152,7 +172,7 @@ export const QA = () => {
                   variants={mv.staggerItem}
                 >
                   <button 
-                    className="w-full text-left p-6 font-heading font-semibold text-lg text-primary hover:text-accent transition-colors flex justify-between items-center focus-visible:bg-gray-50 outline-none focus-visible:ring-2 focus-visible:ring-accent inset-0"
+                    className="w-full text-left p-6 font-heading font-semibold text-lg text-primary hover:text-accent transition-colors flex justify-between items-center focus-visible:bg-gray-50 outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     onClick={() => toggleAccordion(qa.id)}
                     aria-expanded={openId === qa.id}
                   >
@@ -270,9 +290,9 @@ export const QA = () => {
               ></textarea>
             </div>
             <div className="mt-8 text-center">
-              <button type="submit" className="btn btn-primary w-full md:w-auto px-12" disabled={submitting}>
+              <motion.button type="submit" className="btn btn-primary w-full md:w-auto px-12" disabled={submitting} {...magneticProps}>
                 {submitting ? 'Processing...' : 'Submit to Panel'}
-              </button>
+              </motion.button>
             </div>
           </motion.form>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
 
 const getImageForService = (id) => {
   const images = [
@@ -14,6 +15,14 @@ const getImageForService = (id) => {
 
 export const ServiceCard = ({ service, index = 0 }) => {
   const isEven = index % 2 === 0;
+  const shouldReduceMotion = useReducedMotion();
+  const MotionLink = motion(Link);
+  
+  const magneticProps = shouldReduceMotion ? {} : {
+    whileHover: { scale: 1.05, y: -2 },
+    whileTap: { scale: 0.95 },
+    transition: { type: "spring", stiffness: 400, damping: 10 }
+  };
 
   return (
     <div className="flex flex-col md:flex-row overflow-hidden bg-white shadow-lg border border-gray-100 rounded-lg group hover:shadow-xl transition-shadow duration-300">
@@ -21,7 +30,7 @@ export const ServiceCard = ({ service, index = 0 }) => {
       {/* Image Side */}
       <div className={`relative w-full md:w-1/2 h-64 md:h-auto overflow-hidden ${isEven ? 'md:order-1' : 'md:order-2'}`}>
         <img 
-          src={getImageForService(service.id)} 
+          src={getImageForService(index)} 
           alt={service.title} 
           className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
         />
@@ -35,12 +44,13 @@ export const ServiceCard = ({ service, index = 0 }) => {
           {service.short_description}
         </p>
         <div>
-          <Link 
+          <MotionLink 
             to={`/services/${service.slug}`} 
             className="inline-flex items-center font-bold text-accent hover:text-primary transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
+            {...magneticProps}
           >
             Explore Expertise <ArrowRight className="ml-2" size={20} />
-          </Link>
+          </MotionLink>
         </div>
       </div>
 

@@ -1,20 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../api';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useMotionVariants } from '../utils/motion';
 
 export const Contact = () => {
   const [searchParams] = useSearchParams();
   const preselectedService = searchParams.get('service') || '';
   const mv = useMotionVariants();
+  const shouldReduceMotion = useReducedMotion();
+  
+  // Hero parallax
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  
+  const magneticProps = shouldReduceMotion ? {} : {
+    whileHover: { scale: 1.05, y: -2 },
+    whileTap: { scale: 0.95 },
+    transition: { type: "spring", stiffness: 400, damping: 10 }
+  };
 
   const [services, setServices] = useState([]);
   
   const [formData, setFormData] = useState({ 
     name: '', 
     email: '', 
-    phone: '', 
     service_interest: preselectedService, 
     message: '' 
   });
@@ -45,7 +59,7 @@ export const Contact = () => {
     try {
       await api.submitContact(formData);
       setSubmitSuccess(true);
-      setFormData({ name: '', email: '', phone: '', service_interest: '', message: '' });
+      setFormData({ name: '', email: '', service_interest: '', message: '' });
       setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (err) {
       setSubmitError('Failed to transmit contact form. Please try again.');
@@ -57,8 +71,13 @@ export const Contact = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Hero Header */}
-      <section className="bg-primary text-white py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-dark"></div>
+      <section ref={heroRef} className="bg-primary text-white py-24 relative overflow-hidden">
+        <motion.div 
+          className="absolute inset-0 z-0 origin-top"
+          style={{ y: shouldReduceMotion ? 0 : y }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-dark"></div>
+        </motion.div>
         <div className="container relative z-10 max-w-4xl text-center">
           <motion.h1 
             className="text-4xl md:text-6xl font-bold mb-6 text-white"
@@ -81,35 +100,30 @@ export const Contact = () => {
         </div>
       </section>
 
-      <section className="section pb-24 -mt-10">
+      <section className="section -mt-10 relative z-20">
         <div className="container max-w-6xl grid lg:grid-cols-5 gap-8">
           
           {/* Contact Info Panel */}
           <motion.div 
-            className="lg:col-span-2 bg-primary text-white p-10 shadow-xl z-10 relative"
+            className="lg:col-span-2 bg-primary text-white p-6 md:p-12 rounded-2xl shadow-xl z-10 relative"
             variants={mv.textFadeDelay}
             initial="hidden"
             whileInView="visible"
             viewport={mv.viewportConfig}
           >
-            <h3 className="text-2xl font-bold text-white mb-8">Direct Communication</h3>
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8">Direct Communication</h3>
             
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-6 md:gap-8">
               <div>
                 <p className="text-accent uppercase text-xs font-bold tracking-widest mb-2">Email</p>
-                <a href="mailto:contact@fintaxindia.com" className="text-lg hover:text-accent transition-colors text-white outline-none focus-visible:ring-2 focus-visible:ring-accent inline-block">
+                <a href="mailto:contact@fintaxindia.com" className="text-base md:text-lg hover:text-accent transition-colors text-white outline-none focus-visible:ring-2 focus-visible:ring-accent inline-block">
                   contact@fintaxindia.com
                 </a>
               </div>
-              
-              <div>
-                <p className="text-accent uppercase text-xs font-bold tracking-widest mb-2">Office</p>
-                <p className="text-lg text-gray-200">New Delhi, India</p>
-              </div>
             </div>
 
-            <div className="mt-16 pt-8 border-t border-white/20">
-              <p className="text-sm text-gray-400 italic">
+            <div className="mt-8 md:mt-16 pt-6 md:pt-8 border-t border-white/20">
+              <p className="text-xs md:text-sm text-gray-400 italic">
                 * Consultations by prior appointment only.
               </p>
             </div>
@@ -117,7 +131,7 @@ export const Contact = () => {
 
           {/* Form Panel */}
           <motion.div 
-            className="lg:col-span-3 bg-white p-10 shadow-xl z-10 relative"
+            className="lg:col-span-3 bg-white p-6 md:p-12 rounded-2xl shadow-xl z-10 relative"
             variants={mv.textFadeDelay}
             initial="hidden"
             whileInView="visible"
@@ -131,19 +145,19 @@ export const Contact = () => {
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="alert alert-success text-center mb-8 font-semibold"
+                  className="alert alert-success text-center mb-6 md:mb-8 font-semibold"
                 >
                   Your inquiry has been successfully submitted. We will be in touch shortly.
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {submitError && <div className="alert alert-error mb-8 text-center">{submitError}</div>}
+            {submitError && <div className="alert alert-error mb-6 md:mb-8 text-center">{submitError}</div>}
 
             <form onSubmit={handleFormSubmit} className={`transition-opacity duration-300 ${submitSuccess ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                 <div className="form-group">
-                  <label htmlFor="name" className="form-label">Full Name *</label>
+                  <label htmlFor="name" className="form-label text-sm md:text-base">Full Name *</label>
                   <input 
                     type="text" 
                     id="name"
@@ -155,7 +169,7 @@ export const Contact = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="email" className="form-label">Email Address *</label>
+                  <label htmlFor="email" className="form-label text-sm md:text-base">Email Address *</label>
                   <input 
                     type="email" 
                     id="email"
@@ -168,20 +182,9 @@ export const Contact = () => {
                 </div>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-0">
                 <div className="form-group">
-                  <label htmlFor="phone" className="form-label">Contact Number</label>
-                  <input 
-                    type="tel" 
-                    id="phone"
-                    name="phone"
-                    className="form-control" 
-                    value={formData.phone}
-                    onChange={handleFormChange}
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="service_interest" className="form-label">Service Required</label>
+                  <label htmlFor="service_interest" className="form-label text-sm md:text-base">Service Required</label>
                   <select 
                     id="service_interest"
                     name="service_interest"
@@ -197,22 +200,29 @@ export const Contact = () => {
                 </div>
               </div>
 
-              <div className="form-group mb-8">
-                <label htmlFor="message" className="form-label">Detailed Requirements *</label>
+              <div className="form-group mb-6 md:mb-8 mt-4 md:mt-0">
+                <label htmlFor="message" className="form-label text-sm md:text-base">Detailed Requirements *</label>
                 <textarea 
                   id="message"
                   name="message"
                   required 
-                  rows="5" 
+                  rows="4" 
                   className="form-control resize-y"
                   value={formData.message}
                   onChange={handleFormChange}
                 ></textarea>
               </div>
               
-              <button type="submit" className="btn btn-primary w-full py-4 text-lg" disabled={submitting}>
-                {submitting ? 'Transmitting...' : 'Submit Inquiry'}
-              </button>
+              <div className="mt-6 md:mt-8">
+                <motion.button 
+                  type="submit" 
+                  className="btn btn-accent w-full text-base md:text-lg py-3 md:py-4"
+                  disabled={submitting}
+                  {...magneticProps}
+                >
+                  {submitting ? 'Transmitting...' : 'Submit Inquiry'}
+                </motion.button>
+              </div>
             </form>
           </motion.div>
 

@@ -12,6 +12,7 @@ import { Services } from './pages/Services';
 import { ServiceDetail } from './pages/ServiceDetail';
 import { QA } from './pages/QA';
 import { Contact } from './pages/Contact';
+import { NotFound } from './pages/NotFound';
 
 // Admin Pages
 import { Login } from './pages/admin/Login';
@@ -44,6 +45,7 @@ function App() {
             <Route path="services/:slug" element={<ServiceDetail />} />
             <Route path="qa" element={<QA />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
 
           {/* Admin Routes */}

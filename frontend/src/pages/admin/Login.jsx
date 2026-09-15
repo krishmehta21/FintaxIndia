@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Landmark } from 'lucide-react';
@@ -13,7 +13,6 @@ export const Login = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
 
-  // If already logged in, redirect to admin dashboard
   if (!authLoading && user) {
     return <Navigate to="/admin" replace />;
   }
@@ -37,8 +36,8 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50" style={{backgroundColor: 'var(--color-bg-alt)'}}>
-      <div className="max-w-md w-full p-8 bg-white rounded-xl shadow-lg border" style={{borderColor: 'var(--color-border)'}}>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full p-8 bg-white rounded-xl shadow-lg border border-gray-200">
         <div className="text-center mb-8">
           <Landmark size={48} className="mx-auto text-accent mb-4" />
           <h2 className="text-2xl font-bold text-primary">FinTax Admin Portal</h2>
@@ -74,6 +73,12 @@ export const Login = () => {
             {loading ? <Spinner size={20} /> : 'Sign In'}
           </button>
         </form>
+
+        <div className="mt-6 text-center">
+          <Link to="/" className="text-sm text-muted hover:text-primary transition-colors">
+            &larr; Back to website
+          </Link>
+        </div>
       </div>
     </div>
   );
