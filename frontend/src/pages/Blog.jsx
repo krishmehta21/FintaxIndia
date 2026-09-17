@@ -34,7 +34,14 @@ const getReadTime = (text) => {
   return Math.max(1, Math.ceil(words / 200));
 };
 
+import { useSEO } from '../hooks/useSEO';
+
 export const Blog = () => {
+  useSEO({
+    title: 'Tax Insights & Updates | FinTax India',
+    description: 'Expert analysis, compliance alerts, and tax saving strategies from the FinTax India team.'
+  });
+
   const [featuredPosts, setFeaturedPosts] = useState([]);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);

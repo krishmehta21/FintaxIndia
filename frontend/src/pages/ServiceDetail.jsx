@@ -163,12 +163,19 @@ const LOCAL_SERVICES = {
   }
 };
 
+import { useSEO } from '../hooks/useSEO';
+
 export const ServiceDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useSEO({
+    title: service ? `${service.title} | FinTax India` : 'Services | FinTax India',
+    description: service ? service.description : 'Professional tax and financial services in India.'
+  });
   const mv = useMotionVariants();
 
   useEffect(() => {

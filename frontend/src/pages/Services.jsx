@@ -63,7 +63,14 @@ const LOCAL_SERVICES_LIST = [
   }
 ];
 
+import { useSEO } from '../hooks/useSEO';
+
 export const Services = () => {
+  useSEO({
+    title: 'Our Services | FinTax India',
+    description: 'Explore comprehensive tax, accounting, audit, and financial advisory services tailored for individuals and businesses across India.'
+  });
+
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

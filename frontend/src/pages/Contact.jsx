@@ -3,8 +3,14 @@ import { useSearchParams } from 'react-router-dom';
 import { api } from '../api';
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useMotionVariants } from '../utils/motion';
+import { useSEO } from '../hooks/useSEO';
 
 export const Contact = () => {
+  useSEO({
+    title: 'Contact Us | FinTax India',
+    description: 'Get in touch with FinTax India for expert financial and tax advisory. Book a consultation or inquire about our corporate services today.'
+  });
+
   const [searchParams] = useSearchParams();
   const preselectedService = searchParams.get('service') || '';
   const mv = useMotionVariants();

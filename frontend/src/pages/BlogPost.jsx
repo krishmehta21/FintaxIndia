@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { Spinner } from "../components/Spinner";
+import { useSEO } from "../hooks/useSEO";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ChevronLeft, Eye, ThumbsUp, ThumbsDown } from "lucide-react";
@@ -21,6 +22,11 @@ export const BlogPost = () => {
   const [error, setError] = useState("");
   const [vote, setVote] = useState(null);
   const [voting, setVoting] = useState(false);
+
+  useSEO({
+    title: post ? `${post.title} | FinTax India` : 'FinTax India Blog',
+    description: post ? post.excerpt : 'Read our latest tax and financial updates.'
+  });
   
   const viewLogged = useRef(false);
 

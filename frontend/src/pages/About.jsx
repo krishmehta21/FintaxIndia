@@ -2,8 +2,14 @@ import React, { useRef } from 'react';
 import { Target, Users, BookOpen, CheckCircle2, Shield, Tag, ThumbsUp, Handshake } from 'lucide-react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useMotionVariants } from '../utils/motion';
+import { useSEO } from '../hooks/useSEO';
 
 export const About = () => {
+  useSEO({
+    title: 'About Us | FinTax India',
+    description: 'Learn about FinTax India, a trusted team of Chartered Accountants and financial advisors committed to integrity and strategic growth.'
+  });
+
   const mv = useMotionVariants();
   const shouldReduceMotion = useReducedMotion();
   const heroRef = useRef(null);

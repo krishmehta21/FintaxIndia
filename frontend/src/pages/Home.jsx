@@ -16,6 +16,7 @@ import CTAWithVerticalMarquee from '../components/ui/cta-with-text-marquee';
 import { ElasticGallery } from '../components/ui/elastic-gallery';
 import TestimonialsSection from '../components/ui/community-testimonial';
 import { ImageStreamHero } from '../components/ui/image-stream-hero';
+import { useSEO } from '../hooks/useSEO';
 
 const heroImages = [
   { src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800", alt: "Corporate building" },
@@ -29,6 +30,11 @@ const heroImages = [
 ];
 
 export const Home = () => {
+  useSEO({
+    title: 'FinTax India | Tax & Financial Services in India',
+    description: 'FinTax India provides professional tax, accounting and financial services for individuals and businesses across India.'
+  });
+
   const [services, setServices] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -197,15 +203,15 @@ export const Home = () => {
 
       {/* Hero-Stats Overlap Gradient */}
       <section className="py-8 md:py-16 bg-white">
-        <div className="container max-w-4xl text-center">
+        <div className="max-w-4xl mx-auto text-center px-4">
           <motion.h2 
-            className="text-3xl md:text-4xl font-bold text-primary mb-6"
-            variants={mv.headingRise}
+            className="text-3xl md:text-5xl font-bold text-primary mb-6"
+            variants={mv.fadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={mv.viewportConfig}
           >
-            Fintax India Allows You Manage & Grow Your Finances
+            Tax & Financial Services for Individuals and Businesses
           </motion.h2>
           <motion.p 
             className="text-lg md:text-xl text-gray-600 leading-relaxed"

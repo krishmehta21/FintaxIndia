@@ -4,8 +4,14 @@ import { Spinner } from '../components/Spinner';
 import { Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useMotionVariants } from '../utils/motion';
+import { useSEO } from '../hooks/useSEO';
 
 export const QA = () => {
+  useSEO({
+    title: 'Q&A Ledger | FinTax India',
+    description: 'Find answers to frequently asked questions about Indian taxes, GST, compliance, and financial advisory services.'
+  });
+
   const [qaItems, setQaItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
