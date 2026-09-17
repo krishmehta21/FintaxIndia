@@ -9,7 +9,7 @@ export function ElasticGallery() {
       id: "01",
       title: "Income Tax Filing",
       category: "Enjoy stress-free and accurate income tax filing options with us.",
-      src: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200",
       alt: "Income Tax Filing",
     },
     {
@@ -23,7 +23,7 @@ export function ElasticGallery() {
       id: "03",
       title: "GST Filing",
       category: "Effective GST filing to keep your business compliant.",
-      src: "https://images.unsplash.com/photo-1556761175-5973dc0f32d7?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=1200",
       alt: "GST Filing",
     },
     {

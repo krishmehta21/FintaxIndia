@@ -181,7 +181,7 @@ export const AdminBlog = () => {
     }
     
     if (!dataToSubmit.cover_image_url) {
-      dataToSubmit.cover_image_url = 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80';
+      dataToSubmit.cover_image_url = 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80';
     }
 
     try {
