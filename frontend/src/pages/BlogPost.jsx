@@ -70,7 +70,7 @@ export const BlogPost = () => {
         {/* Article Header */}
         <header className="mb-12 text-center">
           <div className="flex justify-center items-center gap-3 mb-6">
-            <span className="px-3 py-1 bg-accent/10 text-accent text-sm font-bold uppercase tracking-wider rounded-sm">
+            <span className="px-3 py-1 bg-accent/10 border border-accent/30 text-primary text-sm font-bold uppercase tracking-wider rounded-md">
               {post.category}
             </span>
             <span className="text-sm text-gray-400 font-medium">

@@ -81,7 +81,7 @@ export const Blog = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.map(post => (
-              <Link to={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+              <Link to={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full">
                 {post.cover_image_url ? (
                   <div className="h-48 overflow-hidden">
                     <img 
@@ -91,13 +91,13 @@ export const Blog = () => {
                     />
                   </div>
                 ) : (
-                  <div className="h-48 bg-primary/5 flex items-center justify-center">
+                  <div className="h-48 bg-primary/5 flex items-center justify-center border-b border-gray-100">
                     <span className="text-primary/20 text-4xl font-bold">FinTax India</span>
                   </div>
                 )}
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="px-2 py-1 bg-accent/10 text-accent text-xs font-bold uppercase tracking-wider rounded-sm">
+                    <span className="px-2.5 py-1 bg-accent/10 border border-accent/30 text-primary text-xs font-bold uppercase tracking-wider rounded-md">
                       {post.category}
                     </span>
                     <span className="text-xs text-gray-400 font-medium">
