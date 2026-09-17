@@ -123,9 +123,9 @@ def admin_list_contact_submissions():
 from app.models.blog import BlogPostCreate, BlogPostUpdate, BlogPostResponse, BlogPostListResponse
 import uuid
 
-@router.get("/blog", response_model=List[BlogPostListResponse])
+@router.get("/blog", response_model=List[BlogPostResponse])
 def admin_list_blog_posts():
-    response = supabase.table("blog_posts").select("id, title, slug, excerpt, cover_image_url, category, status, is_spotlighted, spotlight_rank, published_at, created_at, updated_at, author").order("created_at", desc=True).execute()
+    response = supabase.table("blog_posts").select("*").order("created_at", desc=True).execute()
     return response.data
 
 @router.post("/blog", response_model=BlogPostResponse, status_code=status.HTTP_201_CREATED)
