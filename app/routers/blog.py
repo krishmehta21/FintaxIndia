@@ -7,7 +7,7 @@ from app.cache import ttl_cache
 router = APIRouter(prefix="/blog", tags=["Blog"])
 
 @router.get("/", response_model=List[BlogPostListResponse])
-@ttl_cache(ttl_seconds=300)
+@ttl_cache(ttl_seconds=30)
 def list_published_blog_posts(
     category: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
@@ -32,7 +32,7 @@ def list_published_blog_posts(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/{slug}", response_model=BlogPostResponse)
-@ttl_cache(ttl_seconds=300)
+@ttl_cache(ttl_seconds=30)
 def get_published_blog_post(slug: str):
     try:
         response = supabase.table("blog_posts").select("*").eq("slug", slug).eq("status", "published").execute()
@@ -46,7 +46,7 @@ def get_published_blog_post(slug: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get('/featured/top', response_model=List[BlogPostListResponse])
-@ttl_cache(ttl_seconds=300)
+@ttl_cache(ttl_seconds=30)
 def get_featured_blog_posts():
     try:
         response = supabase.table('blog_posts').select('id, title, slug, excerpt, cover_image_url, category, status, view_count, published_at, created_at, updated_at, author').eq('status', 'published').order('view_count', desc=True).limit(3).execute()
