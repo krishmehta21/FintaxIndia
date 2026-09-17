@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { LayoutDashboard, MessageCircleQuestion, Briefcase, Quote, Mail, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, MessageCircleQuestion, Briefcase, Quote, Mail, LogOut, Menu, X, FileText } from 'lucide-react';
 import { CustomLogo } from './Logo';
 
 export const AdminLayout = () => {
@@ -46,6 +46,9 @@ export const AdminLayout = () => {
         <nav className="flex-grow flex flex-col gap-2 px-4 mt-6">
           <NavLink to="/admin" end className={navLinkClass} onClick={closeSidebar}>
             <LayoutDashboard size={20} /> Dashboard
+          </NavLink>
+          <NavLink to="/admin/blog" className={navLinkClass} onClick={closeSidebar}>
+            <FileText size={20} /> Blog Posts
           </NavLink>
           <NavLink to="/admin/qa" className={navLinkClass} onClick={closeSidebar}>
             <MessageCircleQuestion size={20} /> Q&A
