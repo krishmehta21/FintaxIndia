@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { adminApi } from '../../adminApi';
 import { Spinner } from '../../components/Spinner';
-import { Plus, Edit2, Trash2, Image as ImageIcon, Star, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Edit2, Trash2, Image as ImageIcon, Star, GripVertical } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -26,6 +26,7 @@ export const AdminBlog = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [draggedPostId, setDraggedPostId] = useState(null);
   const fileInputRef = useRef(null);
 
   const sortedPosts = [...posts].sort((a, b) => {
@@ -54,18 +55,43 @@ export const AdminBlog = () => {
     }
   };
 
-  const handleMoveRank = async (post, direction) => {
-    let spotlighted = sortedPosts.filter(p => p.is_spotlighted);
-    const index = spotlighted.findIndex(p => p.id === post.id);
-    if (index === -1) return;
-    
-    if (direction === 'up' && index > 0) {
-      [spotlighted[index - 1], spotlighted[index]] = [spotlighted[index], spotlighted[index - 1]];
-    } else if (direction === 'down' && index < spotlighted.length - 1) {
-      [spotlighted[index + 1], spotlighted[index]] = [spotlighted[index], spotlighted[index + 1]];
-    } else {
+  const handleDragStart = (e, post) => {
+    if (!post.is_spotlighted) {
+      e.preventDefault();
       return;
     }
+    setDraggedPostId(post.id);
+    e.dataTransfer.effectAllowed = 'move';
+    // Firefox requires data to be set for drag to work
+    e.dataTransfer.setData('text/plain', post.id);
+  };
+
+  const handleDragOver = (e, post) => {
+    if (!post.is_spotlighted) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = async (e, targetPost) => {
+    e.preventDefault();
+    if (!draggedPostId || !targetPost.is_spotlighted || draggedPostId === targetPost.id) {
+      setDraggedPostId(null);
+      return;
+    }
+
+    let spotlighted = sortedPosts.filter(p => p.is_spotlighted);
+    const draggedIdx = spotlighted.findIndex(p => p.id === draggedPostId);
+    const targetIdx = spotlighted.findIndex(p => p.id === targetPost.id);
+
+    if (draggedIdx === -1 || targetIdx === -1) {
+      setDraggedPostId(null);
+      return;
+    }
+
+    const item = spotlighted.splice(draggedIdx, 1)[0];
+    spotlighted.splice(targetIdx, 0, item);
+
+    setDraggedPostId(null);
     
     try {
       setLoading(true);
@@ -217,10 +243,29 @@ export const AdminBlog = () => {
                 const isLastSpotlight = index === spotlightedCount - 1;
 
                 return (
-                <tr key={post.id} className="border-b border-gray-100 hover:bg-gray-50">
+                <tr 
+                  key={post.id} 
+                  className={`border-b border-gray-100 hover:bg-gray-50 transition-opacity ${draggedPostId === post.id ? 'opacity-30' : ''}`}
+                  draggable={post.is_spotlighted}
+                  onDragStart={(e) => handleDragStart(e, post)}
+                  onDragOver={(e) => handleDragOver(e, post)}
+                  onDrop={(e) => handleDrop(e, post)}
+                >
                   <td className="p-4">
-                    <p className="font-bold text-gray-900 line-clamp-1">{post.title}</p>
-                    <p className="text-sm text-gray-500">/{post.slug}</p>
+                    <div className="flex items-center gap-3">
+                      {post.is_spotlighted ? (
+                        <div className="flex items-center gap-1 text-gray-400 cursor-grab hover:text-gray-600" title="Drag to reorder">
+                          <GripVertical size={16} />
+                          <span className="font-mono text-xs font-bold text-gray-500 w-3 text-center">{post.spotlight_rank}</span>
+                        </div>
+                      ) : (
+                        <div className="w-9"></div>
+                      )}
+                      <div>
+                        <p className="font-bold text-gray-900 line-clamp-1">{post.title}</p>
+                        <p className="text-sm text-gray-500">/{post.slug}</p>
+                      </div>
+                    </div>
                   </td>
                   <td className="p-4 text-sm text-gray-600 whitespace-nowrap">
                     <span className="px-2 py-1 bg-gray-100 text-xs font-semibold uppercase tracking-wider text-accent rounded-sm">
@@ -235,26 +280,6 @@ export const AdminBlog = () => {
                       <button onClick={() => handleToggleSpotlight(post)} className={`p-1 rounded ${post.is_spotlighted ? 'text-accent hover:text-yellow-600' : 'text-gray-300 hover:text-gray-500'}`} title="Toggle Spotlight">
                         <Star size={18} fill={post.is_spotlighted ? 'currentColor' : 'none'} />
                       </button>
-                      {post.is_spotlighted && (
-                        <div className="flex flex-col">
-                          <button 
-                            onClick={() => handleMoveRank(post, 'up')} 
-                            disabled={isFirstSpotlight}
-                            className={`p-1 -mb-1 ${isFirstSpotlight ? 'text-gray-200' : 'text-gray-400 hover:text-gray-700'}`}
-                            title="Move Up"
-                          >
-                            <ArrowUp size={14} />
-                          </button>
-                          <button 
-                            onClick={() => handleMoveRank(post, 'down')} 
-                            disabled={isLastSpotlight}
-                            className={`p-1 ${isLastSpotlight ? 'text-gray-200' : 'text-gray-400 hover:text-gray-700'}`}
-                            title="Move Down"
-                          >
-                            <ArrowDown size={14} />
-                          </button>
-                        </div>
-                      )}
                     </div>
                   </td>
                   <td className="p-4">
