@@ -8,8 +8,108 @@ const getAuthHeaders = async () => {
   return {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${session.access_token}`
-  };
+  
+  // Blog
+  getBlogPosts: async () => {
+    const res = await fetch(\\/admin/blog\, { headers: await getAuthHeaders() });
+    if (!res.ok) throw new Error('Failed to fetch blog posts');
+    return res.json();
+  },
+  createBlogPost: async (data) => {
+    const res = await fetch(\\/admin/blog\, {
+      method: 'POST',
+      headers: await getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to create blog post');
+    return res.json();
+  },
+  updateBlogPost: async (id, data) => {
+    const res = await fetch(\\/admin/blog/\\, {
+      method: 'PUT',
+      headers: await getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to update blog post');
+    return res.json();
+  },
+  deleteBlogPost: async (id) => {
+    const res = await fetch(\\/admin/blog/\\, {
+      method: 'DELETE',
+      headers: await getAuthHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to delete blog post');
+    return true;
+  },
+  uploadBlogImage: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const headers = await getAuthHeaders();
+    delete headers['Content-Type']; // Let browser set multipart boundary
+    
+    const res = await fetch(\\/admin/blog/upload-image\, {
+      method: 'POST',
+      headers,
+      body: formData
+    });
+    if (!res.ok) throw new Error('Failed to upload image');
+    return res.json(); // { url: '...' }
+  }
 };
+
+
+
+  // Blog
+  getBlogPosts: async () => {
+    const res = await fetch(\\/admin/blog\, { headers: await getAuthHeaders() });
+    if (!res.ok) throw new Error('Failed to fetch blog posts');
+    return res.json();
+  },
+  createBlogPost: async (data) => {
+    const res = await fetch(\\/admin/blog\, {
+      method: 'POST',
+      headers: await getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to create blog post');
+    return res.json();
+  },
+  updateBlogPost: async (id, data) => {
+    const res = await fetch(\\/admin/blog/\\, {
+      method: 'PUT',
+      headers: await getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to update blog post');
+    return res.json();
+  },
+  deleteBlogPost: async (id) => {
+    const res = await fetch(\\/admin/blog/\\, {
+      method: 'DELETE',
+      headers: await getAuthHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to delete blog post');
+    return true;
+  },
+  uploadBlogImage: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const headers = await getAuthHeaders();
+    delete headers['Content-Type']; // Let browser set multipart boundary
+    
+    const res = await fetch(\\/admin/blog/upload-image\, {
+      method: 'POST',
+      headers,
+      body: formData
+    });
+    if (!res.ok) throw new Error('Failed to upload image');
+    return res.json(); // { url: '...' }
+  }
+};
+
+
 
 export const adminApi = {
   // Services
@@ -122,4 +222,54 @@ export const adminApi = {
     if (!res.ok) throw new Error('Failed to fetch contact submissions');
     return res.json();
   }
+
+  // Blog
+  getBlogPosts: async () => {
+    const res = await fetch(\\/admin/blog\, { headers: await getAuthHeaders() });
+    if (!res.ok) throw new Error('Failed to fetch blog posts');
+    return res.json();
+  },
+  createBlogPost: async (data) => {
+    const res = await fetch(\\/admin/blog\, {
+      method: 'POST',
+      headers: await getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to create blog post');
+    return res.json();
+  },
+  updateBlogPost: async (id, data) => {
+    const res = await fetch(\\/admin/blog/\\, {
+      method: 'PUT',
+      headers: await getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to update blog post');
+    return res.json();
+  },
+  deleteBlogPost: async (id) => {
+    const res = await fetch(\\/admin/blog/\\, {
+      method: 'DELETE',
+      headers: await getAuthHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to delete blog post');
+    return true;
+  },
+  uploadBlogImage: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const headers = await getAuthHeaders();
+    delete headers['Content-Type']; // Let browser set multipart boundary
+    
+    const res = await fetch(\\/admin/blog/upload-image\, {
+      method: 'POST',
+      headers,
+      body: formData
+    });
+    if (!res.ok) throw new Error('Failed to upload image');
+    return res.json(); // { url: '...' }
+  }
 };
+
+

@@ -40,4 +40,23 @@ export const api = {
     if (!res.ok) throw new Error('Failed to submit contact form');
     return res.json();
   },
+
+  // Blog
+  getBlogPosts: async (category = '', page = 1) => {
+    const params = new URLSearchParams();
+    if (category) params.append('category', category);
+    if (page) params.append('page', page);
+    const queryString = params.toString() ? '?' + params.toString() : '';
+    
+    const res = await fetch(\\/blog\\);
+    if (!res.ok) throw new Error('Failed to fetch blog posts');
+    return res.json();
+  },
+  getBlogPost: async (slug) => {
+    const res = await fetch(\\/blog/\\);
+    if (!res.ok) throw new Error('Failed to fetch blog post');
+    return res.json();
+  }
 };
+
+

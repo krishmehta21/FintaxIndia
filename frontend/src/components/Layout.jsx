@@ -58,6 +58,7 @@ export const Layout = () => {
             <MotionNavLink to="/about" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>About</MotionNavLink>
             <MotionNavLink to="/services" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>Services</MotionNavLink>
             <MotionNavLink to="/qa" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>Q&A</MotionNavLink>
+            <MotionNavLink to="/blog" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>Blog</MotionNavLink>
             <MotionNavLink to="/contact" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>Contact</MotionNavLink>
             <MotionLink to="/contact" className="md:ml-2 px-5 py-2 text-sm font-semibold border border-primary/20 text-primary hover:bg-primary/5 rounded-md transition-colors whitespace-nowrap" onClick={closeMenu} {...magneticProps}>
               Book a Consultation
@@ -89,9 +90,9 @@ export const Layout = () => {
             <div className="md:col-span-4 lg:col-span-3">
               <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-6 opacity-90 drop-shadow-md">Navigation</h4>
               <ul className="flex flex-col gap-4">
-                {['About Us', 'Our Services', 'Q&A Ledger', 'Contact'].map((item, i) => (
+                {['About Us', 'Our Services', 'Q&A Ledger', 'Insights Blog', 'Contact'].map((item, i) => (
                   <li key={i}>
-                    <Link to={item === 'About Us' ? '/about' : item === 'Our Services' ? '/services' : item === 'Q&A Ledger' ? '/qa' : '/contact'} className="text-gray-400 hover:text-accent hover:translate-x-1 inline-block transition-all text-sm font-medium">
+                    <Link to={item === 'About Us' ? '/about' : item === 'Our Services' ? '/services' : item === 'Q&A Ledger' ? '/qa' : item === 'Insights Blog' ? '/blog' : '/contact'} className="text-gray-400 hover:text-accent hover:translate-x-1 inline-block transition-all text-sm font-medium">
                       {item}
                     </Link>
                   </li>

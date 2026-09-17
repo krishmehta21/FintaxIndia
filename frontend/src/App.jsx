@@ -13,6 +13,8 @@ const Services = React.lazy(() => import('./pages/Services').then(m => ({ defaul
 const ServiceDetail = React.lazy(() => import('./pages/ServiceDetail').then(m => ({ default: m.ServiceDetail })));
 const QA = React.lazy(() => import('./pages/QA').then(m => ({ default: m.QA })));
 const Contact = React.lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
+const Blog = React.lazy(() => import('./pages/Blog').then(m => ({ default: m.Blog })));
+const BlogPost = React.lazy(() => import('./pages/BlogPost').then(m => ({ default: m.BlogPost })));
 const NotFound = React.lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 // Admin Pages
@@ -22,6 +24,7 @@ const AdminQA = React.lazy(() => import('./pages/admin/AdminQA').then(m => ({ de
 const AdminServices = React.lazy(() => import('./pages/admin/AdminServices').then(m => ({ default: m.AdminServices })));
 const AdminTestimonials = React.lazy(() => import('./pages/admin/AdminTestimonials').then(m => ({ default: m.AdminTestimonials })));
 const AdminContacts = React.lazy(() => import('./pages/admin/AdminContacts').then(m => ({ default: m.AdminContacts })));
+const AdminBlog = React.lazy(() => import('./pages/admin/AdminBlog').then(m => ({ default: m.AdminBlog })));
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -47,6 +50,8 @@ function App() {
               <Route path="services/:slug" element={<ServiceDetail />} />
               <Route path="qa" element={<QA />} />
               <Route path="contact" element={<Contact />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="blog/:slug" element={<BlogPost />} />
               <Route path="*" element={<NotFound />} />
             </Route>
 
@@ -60,6 +65,7 @@ function App() {
                 <Route path="services" element={<AdminServices />} />
                 <Route path="testimonials" element={<AdminTestimonials />} />
                 <Route path="contact-submissions" element={<AdminContacts />} />
+                <Route path="blog" element={<AdminBlog />} />
               </Route>
             </Route>
           </Routes>
