@@ -165,31 +165,27 @@ export const Home = () => {
         </motion.div>
 
         {/* Floating Trust Card */}
-        <motion.div 
-          className="hidden md:flex absolute bottom-28 right-8 lg:right-16 z-20 bg-white/10 backdrop-blur-xl border border-white/20 p-4 rounded-xl items-center gap-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+        <MotionLink 
+          to="/blog"
+          className="hidden md:flex absolute bottom-28 right-8 lg:right-16 z-20 bg-white/10 backdrop-blur-xl border border-white/20 p-4 rounded-xl items-center gap-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:bg-white/15 transition-all group"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
         >
-          <div className="flex flex-col items-center justify-center bg-white/5 px-3 py-2 rounded-lg border border-white/10">
-            <span className="text-white font-bold text-2xl leading-none">4.9</span>
-            <div className="flex gap-0.5 mt-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <svg key={star} xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none" className="text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              ))}
-            </div>
+          <div className="flex items-center justify-center bg-accent/20 text-accent px-3 py-3 rounded-lg border border-accent/30 group-hover:bg-accent group-hover:text-primary transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
           </div>
           <div className="pr-2">
-            <p className="text-white font-bold text-sm mb-1 flex items-center gap-2">
-              Google Reviews
+            <p className="text-white font-bold text-sm mb-1 flex items-center gap-2 group-hover:text-accent transition-colors">
+              Explore Tax Insights
               <span className="inline-flex relative h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
               </span>
             </p>
-            <p className="text-gray-300 text-xs">Accepting clients for FY 26-27</p>
+            <p className="text-gray-300 text-xs group-hover:text-white transition-colors">Read our latest updates & guides →</p>
           </div>
-        </motion.div>
+        </MotionLink>
       </ImageStreamHero>
 
       {/* Trust & Stats Band */}
