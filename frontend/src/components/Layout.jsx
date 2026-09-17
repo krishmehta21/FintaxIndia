@@ -100,6 +100,9 @@ export const Layout = () => {
                 </button>
               </div>
 
+              {/* Invisible bridge to prevent hover glitch */}
+              <div className="hidden md:block absolute top-full left-0 w-full h-8 bg-transparent z-40" />
+              
               {/* Dropdown Menu */}
               <AnimatePresence>
                 {servicesDropdownOpen && (
