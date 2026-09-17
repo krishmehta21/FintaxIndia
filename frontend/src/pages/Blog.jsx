@@ -1,18 +1,17 @@
-
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { api } from "../api";
-import { Spinner } from "../components/Spinner";
-import { Eye } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { api } from '../api';
+import { Spinner } from '../components/Spinner';
+import { Eye, Sparkles, ArrowRight } from 'lucide-react';
 
 const CATEGORIES = [
-  "All",
-  "GST Updates",
-  "ITR Filing",
-  "Tax Saving Tips",
-  "Compliance Alerts",
-  "Corporate Advisory",
-  "General Finance"
+  'All',
+  'GST Updates',
+  'ITR Filing',
+  'Tax Saving Tips',
+  'Compliance Alerts',
+  'Corporate Advisory',
+  'General Finance'
 ];
 
 const getReadTime = (text) => {
@@ -26,48 +25,57 @@ export const Blog = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState('All');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  // Fetch Featured only once
+  // Fetch Posts (Grid + Featured if needed)
   useEffect(() => {
-    const fetchFeatured = async () => {
-      try {
-        const data = await api.getFeaturedBlogPosts();
-        setFeaturedPosts(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchFeatured();
-  }, []);
-
-  // Fetch Grid Posts
-  useEffect(() => {
-    const fetchPosts = async () => {
+    let active = true;
+    const loadContent = async () => {
       setLoading(true);
       try {
-        const catParam = activeCategory === "All" ? "" : activeCategory;
-        const data = await api.getBlogPosts(catParam, 1);
-        setPosts(data);
-        setPage(1);
-        setHasMore(data.length === 6);
+        let excludeIds = [];
+        let featured = featuredPosts;
+        
+        // Fetch featured on 'All' category if we haven't yet
+        if (activeCategory === 'All' && featuredPosts.length === 0) {
+           featured = await api.getFeaturedBlogPosts();
+           if (active) setFeaturedPosts(featured);
+        }
+        
+        if (activeCategory === 'All' && featured.length >= 3) {
+           excludeIds = featured.map(p => p.id);
+        }
+
+        const catParam = activeCategory === 'All' ? '' : activeCategory;
+        const data = await api.getBlogPosts(catParam, 1, excludeIds);
+        
+        if (active) {
+          setPosts(data);
+          setPage(1);
+          setHasMore(data.length === 6);
+        }
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
-    fetchPosts();
+    loadContent();
+    return () => { active = false; };
   }, [activeCategory]);
 
   const loadMore = async () => {
     setLoadingMore(true);
     try {
       const nextPage = page + 1;
-      const catParam = activeCategory === "All" ? "" : activeCategory;
-      const data = await api.getBlogPosts(catParam, nextPage);
+      const catParam = activeCategory === 'All' ? '' : activeCategory;
+      let excludeIds = [];
+      if (activeCategory === 'All' && featuredPosts.length >= 3) {
+         excludeIds = featuredPosts.map(p => p.id);
+      }
+      const data = await api.getBlogPosts(catParam, nextPage, excludeIds);
       setPosts(prev => [...prev, ...data]);
       setPage(nextPage);
       setHasMore(data.length === 6);
@@ -79,9 +87,9 @@ export const Blog = () => {
   };
 
   const renderCard = (post, isFeatured = false) => (
-    <Link to={`/blog/${post.slug}`} key={post.id} className={`group bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full ${isFeatured ? "md:flex-row md:h-auto" : ""}`}>
+    <Link to={`/blog/${post.slug}`} key={post.id} className={`group bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full ${isFeatured ? 'md:flex-row md:h-auto' : ''}`}>
       {post.cover_image_url ? (
-        <div className={`overflow-hidden ${isFeatured ? "md:w-2/5 h-64 md:h-full shrink-0" : "h-48"}`}>
+        <div className={`overflow-hidden shrink-0 ${isFeatured ? 'md:w-5/12 h-64 md:h-auto' : 'h-48'}`}>
           <img 
             src={post.cover_image_url} 
             alt={post.title} 
@@ -89,11 +97,11 @@ export const Blog = () => {
           />
         </div>
       ) : (
-        <div className={`bg-primary/5 flex items-center justify-center border-b md:border-b-0 md:border-r border-gray-100 ${isFeatured ? "md:w-2/5 h-64 md:h-full shrink-0" : "h-48"}`}>
+        <div className={`bg-primary/5 flex items-center justify-center border-b md:border-b-0 md:border-r border-gray-100 shrink-0 ${isFeatured ? 'md:w-5/12 h-64 md:h-auto' : 'h-48'}`}>
           <span className="text-primary/20 text-4xl font-bold">FinTax</span>
         </div>
       )}
-      <div className={`flex flex-col flex-grow ${isFeatured ? "p-8 md:p-10" : "p-6"}`}>
+      <div className={`flex flex-col flex-grow ${isFeatured ? 'p-8 md:p-10 lg:p-12 justify-center' : 'p-6'}`}>
         <div className="flex items-center gap-3 mb-4">
           <span className="px-2.5 py-1 bg-accent/10 border border-accent/30 text-primary text-xs font-bold uppercase tracking-wider rounded-md">
             {post.category}
@@ -102,10 +110,10 @@ export const Blog = () => {
             {getReadTime(post.excerpt)} min read
           </span>
         </div>
-        <h2 className={`${isFeatured ? "text-2xl md:text-3xl mb-4" : "text-xl mb-3"} font-bold text-primary group-hover:text-accent transition-colors line-clamp-2`}>
+        <h2 className={`${isFeatured ? 'text-2xl md:text-3xl mb-4' : 'text-xl mb-3'} font-bold text-primary group-hover:text-accent transition-colors line-clamp-2`}>
           {post.title}
         </h2>
-        <p className={`text-gray-600 ${isFeatured ? "text-base md:text-lg line-clamp-3 mb-8" : "text-sm line-clamp-3 mb-6"} flex-grow`}>
+        <p className={`text-gray-600 ${isFeatured ? 'text-base md:text-lg line-clamp-3 mb-8' : 'text-sm line-clamp-3 mb-6'} flex-grow`}>
           {post.excerpt}
         </p>
         <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
@@ -114,9 +122,14 @@ export const Blog = () => {
             <span className="flex items-center gap-1">
               <Eye size={14} /> {post.view_count || 0}
             </span>
-            <span>{new Date(post.published_at || post.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+            <span>{new Date(post.published_at || post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </div>
         </div>
+        {isFeatured && (
+           <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-accent group-hover:text-primary transition-colors">
+             Read Article <ArrowRight size={16} />
+           </div>
+        )}
       </div>
     </Link>
   );
@@ -134,9 +147,13 @@ export const Blog = () => {
         </div>
 
         {/* Featured Section */}
-        {activeCategory === "All" && featuredPosts.length >= 3 && (
+        {activeCategory === 'All' && featuredPosts.length >= 3 && (
           <div className="mb-20">
-            <h2 className="text-2xl font-bold text-primary mb-8 border-b border-gray-200 pb-2">Top Reads</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-primary mb-8 flex items-center gap-3">
+              <Sparkles className="text-accent" size={28} /> 
+              Top Reads
+              <div className="h-px bg-gray-200 flex-grow ml-4"></div>
+            </h2>
             <div className="flex flex-col gap-8">
               {/* Top Featured Post */}
               {renderCard(featuredPosts[0], true)}
@@ -156,8 +173,8 @@ export const Blog = () => {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
                 activeCategory === cat 
-                  ? "bg-accent text-white shadow-md" 
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  ? 'bg-accent text-white shadow-md' 
+                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
               }`}
             >
               {cat}
@@ -186,7 +203,7 @@ export const Blog = () => {
                   disabled={loadingMore}
                   className="btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-primary hover:border-gray-400 px-8 disabled:opacity-50"
                 >
-                  {loadingMore ? "Loading..." : "Load More"}
+                  {loadingMore ? 'Loading...' : 'Load More'}
                 </button>
               </div>
             )}
@@ -196,4 +213,3 @@ export const Blog = () => {
     </div>
   );
 };
-

@@ -40,10 +40,11 @@ export const api = {
     if (!res.ok) throw new Error('Failed to submit contact form');
     return res.json();
   },
-  getBlogPosts: async (category = '', page = 1) => {
+  getBlogPosts: async (category = '', page = 1, excludeIds = []) => {
     const params = new URLSearchParams();
     if (category) params.append('category', category);
     if (page) params.append('page', page);
+    if (excludeIds && excludeIds.length > 0) params.append('exclude_ids', excludeIds.join(','));
     const queryString = params.toString() ? '?' + params.toString() : '';
     
     const res = await fetch(`${BASE_URL}/blog${queryString}`);

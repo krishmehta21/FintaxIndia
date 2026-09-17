@@ -9,6 +9,7 @@ router = APIRouter(prefix="/blog", tags=["Blog"])
 @router.get("/", response_model=List[BlogPostListResponse])
 @ttl_cache(ttl_seconds=30)
 def list_published_blog_posts(
+    exclude_ids: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(6, ge=1, le=50)
@@ -18,6 +19,12 @@ def list_published_blog_posts(
         query = query.eq("status", "published")
         if category:
             query = query.eq("category", category)
+            
+        if exclude_ids:
+            ids = [i.strip() for i in exclude_ids.split(',') if i.strip()]
+            if ids:
+                val = '(' + ','.join(ids) + ')'
+                query = query.filter('id', 'not.in', val)
             
         # Pagination
         start_idx = (page - 1) * limit
