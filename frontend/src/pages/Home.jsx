@@ -1,15 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowRight, Briefcase, Target, ShieldCheck, Clock, 
-  ChevronRight, CheckCircle2, Users, IndianRupee, Layers
-} from 'lucide-react';
-import { api } from '../api';
-import { ServicesShowcase } from '../components/ServicesShowcase';
+import { ShieldCheck, Users, IndianRupee, Layers } from 'lucide-react';
 import { StatsBand } from '../components/StatsBand';
-import { Spinner } from '../components/Spinner';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useMotionVariants } from '../utils/motion';
 import { FAQPreview } from '../components/FAQPreview';
 import CTAWithVerticalMarquee from '../components/ui/cta-with-text-marquee';
@@ -19,15 +12,17 @@ import { ImageStreamHero } from '../components/ui/image-stream-hero';
 import { useSEO } from '../hooks/useSEO';
 
 const heroImages = [
-  { src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800", alt: "Corporate building" },
-  { src: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800", alt: "Meeting" },
-  { src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=800", alt: "Charts" },
-  { src: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=800", alt: "Calculator" },
-  { src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800", alt: "Professional" },
-  { src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800", alt: "Team" },
-  { src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800", alt: "Strategy" },
-  { src: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80&w=800", alt: "Meeting table" },
+  { src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=75&w=600", alt: "Corporate building" },
+  { src: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=75&w=600", alt: "Meeting" },
+  { src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=75&w=600", alt: "Charts" },
+  { src: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=75&w=600", alt: "Calculator" },
+  { src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=75&w=600", alt: "Professional" },
+  { src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=75&w=600", alt: "Team" },
+  { src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=75&w=600", alt: "Strategy" },
+  { src: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=75&w=600", alt: "Meeting table" },
 ];
+
+const MotionLink = motion(Link);
 
 export const Home = () => {
   useSEO({
@@ -35,29 +30,9 @@ export const Home = () => {
     description: 'FinTax India provides professional tax, accounting and financial services for individuals and businesses across India.'
   });
 
-  const [services, setServices] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
-  
   const mv = useMotionVariants();
   const shouldReduceMotion = useReducedMotion();
 
-  // Hero parallax
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-
-  const MotionLink = motion(Link);
-  const magneticProps = shouldReduceMotion ? {} : {
-    whileHover: { scale: 1.05, y: -2 },
-    whileTap: { scale: 0.95 },
-    transition: { type: "spring", stiffness: 400, damping: 10 }
-  };
-  
   const orbAnimation1 = shouldReduceMotion ? {} : {
     animate: { y: [0, -50, 0], x: [0, 30, 0] },
     transition: { duration: 25, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }
@@ -67,32 +42,6 @@ export const Home = () => {
     animate: { y: [0, 60, 0], x: [0, -40, 0] },
     transition: { duration: 30, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: 2 }
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [servicesData, testData] = await Promise.all([
-          api.getServices(),
-          api.getTestimonials()
-        ]);
-        setServices(servicesData);
-        setTestimonials(testData);
-      } catch (error) {
-        console.error("Failed to fetch home data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  if (loading) {
-    return <div className="min-h-[85vh] flex items-center justify-center"><Spinner size={40} /></div>;
-  }
 
   return (
     <div>

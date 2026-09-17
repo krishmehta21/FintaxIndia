@@ -5,28 +5,33 @@ import { Link } from 'react-router-dom';
 import { useMotionVariants } from '../utils/motion';
 import { api } from '../api';
 
+const DEFAULT_FAQS = [
+  { id: 'f1', question: 'What documents are required for income tax filing?', answer: 'Generally, you need your PAN card, Aadhaar card, Form 16, bank statements, and investment proofs.' },
+  { id: 'f2', question: 'How long does it take to register a company?', answer: 'Company registration usually takes 7-14 working days, subject to document verification and government processing times.' },
+  { id: 'f3', question: 'Do you offer online consultations?', answer: 'Yes, we provide seamless online consultations via video call or phone for clients across India and abroad.' },
+  { id: 'f4', question: 'What are the deadlines for GST return filing?', answer: 'GSTR-1 is typically due by the 11th of every month, while GSTR-3B is due between the 20th and 24th depending on business turnover and state category.' },
+];
+
 export const FAQPreview = () => {
   const mv = useMotionVariants();
-  const [faqs, setFaqs] = useState([]);
-  const [openId, setOpenId] = useState(null);
+  const [faqs, setFaqs] = useState(DEFAULT_FAQS);
+  const [openId, setOpenId] = useState('f1');
 
   useEffect(() => {
+    let isMounted = true;
     const fetchFAQs = async () => {
       try {
         const data = await api.getQA();
-        setFaqs(data.slice(0, 4));
-        if (data.length > 0) setOpenId(data[0].id);
+        if (isMounted && data && data.length > 0) {
+          setFaqs(data.slice(0, 4));
+          setOpenId(data[0].id);
+        }
       } catch (err) {
-        console.error("Failed to fetch FAQs:", err);
-        setFaqs([
-          { id: 'f1', question: 'What documents are required for income tax filing?', answer: 'Generally, you need your PAN card, Aadhaar card, Form 16, bank statements, and investment proofs.' },
-          { id: 'f2', question: 'How long does it take to register a company?', answer: 'Company registration usually takes 7-14 working days, subject to document verification and government processing times.' },
-          { id: 'f3', question: 'Do you offer online consultations?', answer: 'Yes, we provide seamless online consultations via video call or phone for clients across India and abroad.' },
-        ]);
-        setOpenId('f1');
+        // Fallback already rendered
       }
     };
     fetchFAQs();
+    return () => { isMounted = false; };
   }, []);
 
   return (

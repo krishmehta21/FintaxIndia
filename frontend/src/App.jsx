@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Layout } from './components/Layout';
-import { AdminLayout } from './components/AdminLayout';
 
 // Public Pages
 import { Home } from './pages/Home';
@@ -18,6 +17,7 @@ const BlogPost = React.lazy(() => import('./pages/BlogPost').then(m => ({ defaul
 const NotFound = React.lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 // Admin Pages
+const AdminLayout = React.lazy(() => import('./components/AdminLayout').then(m => ({ default: m.AdminLayout })));
 const Login = React.lazy(() => import('./pages/admin/Login').then(m => ({ default: m.Login })));
 const Dashboard = React.lazy(() => import('./pages/admin/Dashboard').then(m => ({ default: m.Dashboard })));
 const AdminQA = React.lazy(() => import('./pages/admin/AdminQA').then(m => ({ default: m.AdminQA })));

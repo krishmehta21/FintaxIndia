@@ -9,63 +9,63 @@ export function ElasticGallery() {
       id: "01",
       title: "Income Tax Filing",
       category: "Enjoy stress-free and accurate income tax filing options with us.",
-      src: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=75&w=800",
       alt: "Income Tax Filing",
     },
     {
       id: "02",
       title: "Financial Services",
       category: "We provide complete financial planning and management services.",
-      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=75&w=800",
       alt: "Financial Services",
     },
     {
       id: "03",
       title: "GST Filing",
       category: "Effective GST filing to keep your business compliant.",
-      src: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=75&w=800",
       alt: "GST Filing",
     },
     {
       id: "04",
       title: "Loan Services",
       category: "Professional guidance in securing the correct loan as per your needs.",
-      src: "https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?auto=format&fit=crop&q=75&w=800",
       alt: "Loan Services",
     },
     {
       id: "05",
       title: "Insurance Services",
       category: "Personalised insurance plans for a secured future.",
-      src: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=75&w=800",
       alt: "Insurance Services",
     },
     {
       id: "06",
       title: "Corporate Services",
       category: "We are experts at offering end-to-end corporate solutions for your business.",
-      src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=75&w=800",
       alt: "Corporate Services",
     },
     {
       id: "07",
       title: "Market Analysis",
       category: "In-depth market research to help you make informed decisions.",
-      src: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=75&w=800",
       alt: "Market Analysis",
     },
     {
       id: "08",
       title: "Quality Resourcing",
       category: "Connecting you with top-tier talent and essential resources.",
-      src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=75&w=800",
       alt: "Quality Resourcing",
     },
     {
       id: "09",
       title: "Talented Consultants",
       category: "Expert guidance from industry-leading professionals.",
-      src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=1200",
+      src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=75&w=800",
       alt: "Talented Consultants",
     },
   ];
@@ -126,6 +126,8 @@ export function ElasticGallery() {
               <img
                 src={item.src}
                 alt={item.alt}
+                loading="lazy"
+                decoding="async"
                 className={cn(
                   "object-cover w-full h-full transition-transform duration-1000",
                   // Subtle zoom on active
