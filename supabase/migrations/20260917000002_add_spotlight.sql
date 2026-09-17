@@ -1,0 +1,3 @@
+ALTER TABLE public.blog_posts 
+ADD COLUMN IF NOT EXISTS is_spotlighted BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS spotlight_rank INTEGER DEFAULT NULL;

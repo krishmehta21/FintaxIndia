@@ -24,6 +24,8 @@ class BlogPostCreate(BaseModel):
     cover_image_url: Optional[str] = None
     category: BlogCategory
     status: BlogStatus = BlogStatus.DRAFT
+    is_spotlighted: bool = False
+    spotlight_rank: Optional[int] = None
 
 class BlogPostUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=2, max_length=255)
@@ -33,6 +35,8 @@ class BlogPostUpdate(BaseModel):
     cover_image_url: Optional[str] = None
     category: Optional[BlogCategory] = None
     status: Optional[BlogStatus] = None
+    is_spotlighted: Optional[bool] = None
+    spotlight_rank: Optional[int] = None
 
 class BlogPostResponse(BaseModel):
     id: UUID
@@ -46,6 +50,8 @@ class BlogPostResponse(BaseModel):
     view_count: int = 0
     helpful_count: int = 0
     not_helpful_count: int = 0
+    is_spotlighted: bool = False
+    spotlight_rank: Optional[int] = None
     published_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
@@ -62,6 +68,8 @@ class BlogPostListResponse(BaseModel):
     category: BlogCategory
     status: BlogStatus
     view_count: int = 0
+    is_spotlighted: bool = False
+    spotlight_rank: Optional[int] = None
     published_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime

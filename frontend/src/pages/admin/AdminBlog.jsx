@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { adminApi } from '../../adminApi';
 import { Spinner } from '../../components/Spinner';
-import { Plus, Edit2, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, Image as ImageIcon, Star } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -27,6 +27,25 @@ export const AdminBlog = () => {
   const [submitting, setSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef(null);
+
+  const handleToggleSpotlight = async (post) => {
+    try {
+      await adminApi.updateBlogPost(post.id, { is_spotlighted: !post.is_spotlighted });
+      fetchPosts();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRankChange = async (post, rankStr) => {
+    try {
+      const rank = rankStr === '' ? null : parseInt(rankStr, 10);
+      await adminApi.updateBlogPost(post.id, { spotlight_rank: rank });
+      fetchPosts();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -150,6 +169,7 @@ export const AdminBlog = () => {
                 <th className="p-4 font-semibold text-gray-600">Post</th>
                 <th className="p-4 font-semibold text-gray-600">Category</th>
                 <th className="p-4 font-semibold text-gray-600">Last Updated</th>
+                <th className="p-4 font-semibold text-gray-600">Spotlight</th>
                 <th className="p-4 font-semibold text-gray-600">Status</th>
                 <th className="p-4 font-semibold text-gray-600 text-right">Actions</th>
               </tr>
@@ -170,6 +190,23 @@ export const AdminBlog = () => {
                     {new Date(post.updated_at).toLocaleDateString()}
                   </td>
                   <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => handleToggleSpotlight(post)} className={`p-1 rounded ${post.is_spotlighted ? 'text-accent hover:text-yellow-600' : 'text-gray-300 hover:text-gray-500'}`} title="Toggle Spotlight">
+                        <Star size={18} fill={post.is_spotlighted ? 'currentColor' : 'none'} />
+                      </button>
+                      {post.is_spotlighted && (
+                        <input 
+                          type="number" 
+                          min="1" 
+                          className="form-control w-16 p-1 text-xs" 
+                          placeholder="Rank"
+                          defaultValue={post.spotlight_rank || ''}
+                          onBlur={(e) => handleRankChange(post, e.target.value)}
+                        />
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-4">
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full 
                       ${post.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
                       {post.status.toUpperCase()}
@@ -187,7 +224,7 @@ export const AdminBlog = () => {
               ))}
               {posts.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="p-8 text-center text-gray-500">No blog posts found.</td>
+                  <td colSpan="6" className="p-8 text-center text-gray-500">No blog posts found.</td>
                 </tr>
               )}
             </tbody>

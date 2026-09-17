@@ -56,7 +56,13 @@ def get_published_blog_post(slug: str):
 @ttl_cache(ttl_seconds=30)
 def get_featured_blog_posts():
     try:
-        response = supabase.table('blog_posts').select('id, title, slug, excerpt, cover_image_url, category, status, view_count, published_at, created_at, updated_at, author').eq('status', 'published').order('view_count', desc=True).limit(3).execute()
+        response = supabase.table('blog_posts').select('id, title, slug, excerpt, cover_image_url, category, status, view_count, is_spotlighted, spotlight_rank, published_at, created_at, updated_at, author') \
+            .eq('status', 'published') \
+            .eq('is_spotlighted', True) \
+            .order('spotlight_rank', desc=False, nullsfirst=False) \
+            .order('published_at', desc=True) \
+            .limit(3) \
+            .execute()
         return response.data
     except Exception as e:
         print(f'Supabase connection failed: {e}')
