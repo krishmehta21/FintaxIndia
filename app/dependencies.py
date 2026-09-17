@@ -5,7 +5,7 @@ from app.db import supabase
 
 security = HTTPBearer()
 
-async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
     token = credentials.credentials
     try:
         user_response = supabase.auth.get_user(token)

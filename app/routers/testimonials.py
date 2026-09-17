@@ -2,10 +2,12 @@ from typing import List
 from fastapi import APIRouter
 from app.db import supabase
 from app.models.testimonials import TestimonialResponse
+from app.cache import ttl_cache
 
 router = APIRouter(prefix="/testimonials", tags=["Testimonials"])
 
 @router.get("/", response_model=List[TestimonialResponse])
+@ttl_cache(ttl_seconds=300)
 def list_published_testimonials():
     try:
         response = supabase.table("testimonials").select("*").eq("is_published", True).order("display_order").execute()

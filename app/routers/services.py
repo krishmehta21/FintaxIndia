@@ -1,14 +1,16 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, status
 from app.db import supabase
-from app.models.services import ServiceResponse
+from app.models.services import ServiceResponse, ServiceListResponse
+from app.cache import ttl_cache
 
 router = APIRouter(prefix="/services", tags=["Services"])
 
-@router.get("/", response_model=List[ServiceResponse])
+@router.get("/", response_model=List[ServiceListResponse])
+@ttl_cache(ttl_seconds=300)
 def list_published_services():
     try:
-        response = supabase.table("services").select("*").eq("is_published", True).order("display_order").execute()
+        response = supabase.table("services").select("id, title, slug, short_description, icon_name, display_order, is_published, created_at, updated_at").eq("is_published", True).order("display_order").execute()
         return response.data
     except Exception as e:
         print(f"Supabase connection failed: {e}. Returning dummy data.")
@@ -19,7 +21,8 @@ def list_published_services():
         ]
 
 @router.get("/{slug}", response_model=ServiceResponse)
-async def get_service_by_slug(slug: str):
+@ttl_cache(ttl_seconds=300)
+def get_service_by_slug(slug: str):
     response = supabase.table("services").select("*").eq("slug", slug).eq("is_published", True).execute()
     if not response.data:
         raise HTTPException(

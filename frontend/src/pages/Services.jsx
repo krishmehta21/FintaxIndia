@@ -91,7 +91,8 @@ export const Services = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        setServices(LOCAL_SERVICES_LIST);
+        const data = await api.getServices();
+        setServices(data);
       } catch (err) {
         setError('Failed to load services. Please try again later.');
       } finally {

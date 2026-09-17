@@ -9,6 +9,7 @@ export const TestimonialCard = ({ quote, authorName, authorTitle, avatarUrl }) =
           src={avatarUrl}
           alt={authorName}
           className="w-12 h-12 rounded-full bg-primary/50 object-cover border border-white/20"
+          loading="lazy"
         />
         <div>
           <h4 className="text-base font-bold text-white">{authorName}</h4>

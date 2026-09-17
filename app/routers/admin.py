@@ -14,18 +14,18 @@ router = APIRouter(prefix="/admin", tags=["Admin"], dependencies=[Depends(get_cu
 # --- Services Admin Endpoints ---
 
 @router.get("/services", response_model=List[ServiceResponse])
-async def admin_list_services():
+def admin_list_services():
     response = supabase.table("services").select("*").order("display_order").execute()
     return response.data
 
 @router.post("/services", response_model=ServiceResponse, status_code=status.HTTP_201_CREATED)
-async def admin_create_service(service_in: ServiceCreate):
+def admin_create_service(service_in: ServiceCreate):
     data = service_in.model_dump(mode="json")
     response = supabase.table("services").insert(data).execute()
     return response.data[0]
 
 @router.put("/services/{service_id}", response_model=ServiceResponse)
-async def admin_update_service(service_id: UUID, service_in: ServiceUpdate):
+def admin_update_service(service_id: UUID, service_in: ServiceUpdate):
     data = service_in.model_dump(mode="json", exclude_unset=True)
     if not data:
         raise HTTPException(status_code=400, detail="No fields provided for update")
@@ -35,7 +35,7 @@ async def admin_update_service(service_id: UUID, service_in: ServiceUpdate):
     return response.data[0]
 
 @router.delete("/services/{service_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def admin_delete_service(service_id: UUID):
+def admin_delete_service(service_id: UUID):
     response = supabase.table("services").delete().eq("id", str(service_id)).execute()
     return None
 
@@ -43,7 +43,7 @@ async def admin_delete_service(service_id: UUID):
 # --- Q&A Admin Endpoints ---
 
 @router.get("/qa", response_model=List[QAResponse])
-async def admin_list_qa(
+def admin_list_qa(
     status_filter: Optional[str] = Query(None, alias="status"),
     category_filter: Optional[str] = Query(None, alias="category")
 ):
@@ -56,7 +56,7 @@ async def admin_list_qa(
     return response.data
 
 @router.patch("/qa/{qa_id}", response_model=QAResponse)
-async def admin_patch_qa(qa_id: UUID, qa_in: QAAdminUpdate):
+def admin_patch_qa(qa_id: UUID, qa_in: QAAdminUpdate):
     data = qa_in.model_dump(mode="json", exclude_unset=True)
     if not data:
         raise HTTPException(status_code=400, detail="No fields provided for update")
@@ -74,18 +74,18 @@ async def admin_patch_qa(qa_id: UUID, qa_in: QAAdminUpdate):
 # --- Testimonials Admin Endpoints ---
 
 @router.get("/testimonials", response_model=List[TestimonialResponse])
-async def admin_list_testimonials():
+def admin_list_testimonials():
     response = supabase.table("testimonials").select("*").order("display_order").execute()
     return response.data
 
 @router.post("/testimonials", response_model=TestimonialResponse, status_code=status.HTTP_201_CREATED)
-async def admin_create_testimonial(testimonial_in: TestimonialCreate):
+def admin_create_testimonial(testimonial_in: TestimonialCreate):
     data = testimonial_in.model_dump(mode="json")
     response = supabase.table("testimonials").insert(data).execute()
     return response.data[0]
 
 @router.put("/testimonials/{testimonial_id}", response_model=TestimonialResponse)
-async def admin_update_testimonial(testimonial_id: UUID, testimonial_in: TestimonialUpdate):
+def admin_update_testimonial(testimonial_id: UUID, testimonial_in: TestimonialUpdate):
     data = testimonial_in.model_dump(mode="json", exclude_unset=True)
     if not data:
         raise HTTPException(status_code=400, detail="No fields provided for update")
@@ -95,7 +95,7 @@ async def admin_update_testimonial(testimonial_id: UUID, testimonial_in: Testimo
     return response.data[0]
 
 @router.delete("/testimonials/{testimonial_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def admin_delete_testimonial(testimonial_id: UUID):
+def admin_delete_testimonial(testimonial_id: UUID):
     supabase.table("testimonials").delete().eq("id", str(testimonial_id)).execute()
     return None
 
@@ -103,6 +103,6 @@ async def admin_delete_testimonial(testimonial_id: UUID):
 # --- Contact Submissions Admin Endpoints (Read-only listing) ---
 
 @router.get("/contact-submissions", response_model=List[ContactSubmissionResponse])
-async def admin_list_contact_submissions():
+def admin_list_contact_submissions():
     response = supabase.table("contact_submissions").select("*").order("created_at", desc=True).execute()
     return response.data

@@ -30,3 +30,16 @@ class ServiceResponse(ServiceBase):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class ServiceListResponse(BaseModel):
+    id: UUID
+    title: str
+    slug: str
+    short_description: str
+    icon_name: str
+    display_order: int
+    is_published: bool
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
