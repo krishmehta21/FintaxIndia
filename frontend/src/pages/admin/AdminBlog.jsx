@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { adminApi } from '../../adminApi';
 import { Spinner } from '../../components/Spinner';
-import { Plus, Edit2, Trash2, Image as ImageIcon, Star } from 'lucide-react';
+import { Plus, Edit2, Trash2, Image as ImageIcon, Star, ArrowUp, ArrowDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -28,22 +28,54 @@ export const AdminBlog = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef(null);
 
+  const sortedPosts = [...posts].sort((a, b) => {
+    if (a.is_spotlighted && !b.is_spotlighted) return -1;
+    if (!a.is_spotlighted && b.is_spotlighted) return 1;
+    if (a.is_spotlighted && b.is_spotlighted) {
+      const rankA = a.spotlight_rank || 999;
+      const rankB = b.spotlight_rank || 999;
+      return rankA - rankB;
+    }
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
   const handleToggleSpotlight = async (post) => {
     try {
-      await adminApi.updateBlogPost(post.id, { is_spotlighted: !post.is_spotlighted });
+      const isNowSpotlighted = !post.is_spotlighted;
+      let newRank = null;
+      if (isNowSpotlighted) {
+         const spotlighted = sortedPosts.filter(p => p.is_spotlighted);
+         newRank = spotlighted.length + 1;
+      }
+      await adminApi.updateBlogPost(post.id, { is_spotlighted: isNowSpotlighted, spotlight_rank: newRank });
       fetchPosts();
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleRankChange = async (post, rankStr) => {
+  const handleMoveRank = async (post, direction) => {
+    let spotlighted = sortedPosts.filter(p => p.is_spotlighted);
+    const index = spotlighted.findIndex(p => p.id === post.id);
+    if (index === -1) return;
+    
+    if (direction === 'up' && index > 0) {
+      [spotlighted[index - 1], spotlighted[index]] = [spotlighted[index], spotlighted[index - 1]];
+    } else if (direction === 'down' && index < spotlighted.length - 1) {
+      [spotlighted[index + 1], spotlighted[index]] = [spotlighted[index], spotlighted[index + 1]];
+    } else {
+      return;
+    }
+    
     try {
-      const rank = rankStr === '' ? null : parseInt(rankStr, 10);
-      await adminApi.updateBlogPost(post.id, { spotlight_rank: rank });
+      setLoading(true);
+      await Promise.all(
+        spotlighted.map((p, i) => adminApi.updateBlogPost(p.id, { spotlight_rank: i + 1 }))
+      );
       fetchPosts();
-    } catch (err) {
+    } catch(err) {
       console.error(err);
+      setLoading(false);
     }
   };
 
@@ -179,7 +211,12 @@ export const AdminBlog = () => {
               </tr>
             </thead>
             <tbody>
-              {posts.map(post => (
+              {sortedPosts.map((post, index) => {
+                const spotlightedCount = sortedPosts.filter(p => p.is_spotlighted).length;
+                const isFirstSpotlight = index === 0;
+                const isLastSpotlight = index === spotlightedCount - 1;
+
+                return (
                 <tr key={post.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="p-4">
                     <p className="font-bold text-gray-900 line-clamp-1">{post.title}</p>
@@ -199,14 +236,24 @@ export const AdminBlog = () => {
                         <Star size={18} fill={post.is_spotlighted ? 'currentColor' : 'none'} />
                       </button>
                       {post.is_spotlighted && (
-                        <input 
-                          type="number" 
-                          min="1" 
-                          className="form-control w-16 p-1 text-xs" 
-                          placeholder="Rank"
-                          defaultValue={post.spotlight_rank || ''}
-                          onBlur={(e) => handleRankChange(post, e.target.value)}
-                        />
+                        <div className="flex flex-col">
+                          <button 
+                            onClick={() => handleMoveRank(post, 'up')} 
+                            disabled={isFirstSpotlight}
+                            className={`p-1 -mb-1 ${isFirstSpotlight ? 'text-gray-200' : 'text-gray-400 hover:text-gray-700'}`}
+                            title="Move Up"
+                          >
+                            <ArrowUp size={14} />
+                          </button>
+                          <button 
+                            onClick={() => handleMoveRank(post, 'down')} 
+                            disabled={isLastSpotlight}
+                            className={`p-1 ${isLastSpotlight ? 'text-gray-200' : 'text-gray-400 hover:text-gray-700'}`}
+                            title="Move Down"
+                          >
+                            <ArrowDown size={14} />
+                          </button>
+                        </div>
                       )}
                     </div>
                   </td>
@@ -225,7 +272,8 @@ export const AdminBlog = () => {
                     </button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {posts.length === 0 && (
                 <tr>
                   <td colSpan="6" className="p-8 text-center text-gray-500">No blog posts found.</td>
