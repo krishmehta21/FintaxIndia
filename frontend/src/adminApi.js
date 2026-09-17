@@ -65,6 +65,23 @@ export const adminApi = {
     if (!res.ok) throw new Error('Failed to update Q&A');
     return res.json();
   },
+  createQA: async (data) => {
+    const res = await fetch(`${BASE_URL}/admin/qa`, {
+      method: 'POST',
+      headers: await getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to create Q&A');
+    return res.json();
+  },
+  deleteQA: async (id) => {
+    const res = await fetch(`${BASE_URL}/admin/qa/${id}`, {
+      method: 'DELETE',
+      headers: await getAuthHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to delete Q&A');
+    return true;
+  },
 
   // Testimonials
   getTestimonials: async () => {

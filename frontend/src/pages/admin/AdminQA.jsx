@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { adminApi } from '../../adminApi';
 import { Spinner } from '../../components/Spinner';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 
 export const AdminQA = () => {
   const [qaItems, setQaItems] = useState([]);
@@ -8,8 +9,9 @@ export const AdminQA = () => {
   const [filter, setFilter] = useState('');
   
   // Modal state
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [formData, setFormData] = useState({ category: '', question: '', answer: '', slug: '', status: '' });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState({ category: '', question: '', answer: '', slug: '', status: 'published' });
   const [submitting, setSubmitting] = useState(false);
 
   const fetchQA = async () => {
@@ -28,20 +30,24 @@ export const AdminQA = () => {
     fetchQA();
   }, [filter]);
 
-  const openModal = (item) => {
-    setSelectedItem(item);
-    setFormData({
-      category: item.category || '',
-      question: item.question || '',
-      answer: item.answer || '',
-      slug: item.slug || '',
-      status: item.status || 'pending'
-    });
+  const openModal = (item = null) => {
+    if (item) {
+      setEditingId(item.id);
+      setFormData({
+        category: item.category || '',
+        question: item.question || '',
+        answer: item.answer || '',
+        slug: item.slug || '',
+        status: item.status || 'pending'
+      });
+    } else {
+      setEditingId(null);
+      setFormData({ category: '', question: '', answer: '', slug: '', status: 'published' });
+    }
+    setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setSelectedItem(null);
-  };
+  const closeModal = () => setIsModalOpen(false);
 
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,31 +57,52 @@ export const AdminQA = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await adminApi.updateQA(selectedItem.id, formData);
+      if (editingId) {
+        await adminApi.updateQA(editingId, formData);
+      } else {
+        await adminApi.createQA(formData);
+      }
       closeModal();
       fetchQA();
     } catch (err) {
       console.error(err);
-      alert('Failed to update Q&A item');
+      alert('Failed to save Q&A item');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this Q&A item?')) {
+      try {
+        await adminApi.deleteQA(id);
+        fetchQA();
+      } catch (err) {
+        console.error(err);
+        alert('Failed to delete Q&A item');
+      }
     }
   };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-primary">Q&A Management</h1>
-        <select 
-          className="form-control w-auto" 
-          value={filter} 
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="published">Published</option>
-          <option value="rejected">Rejected</option>
-        </select>
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold text-primary">Q&A Management</h1>
+          <select 
+            className="form-control w-auto" 
+            value={filter} 
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="published">Published</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <button onClick={() => openModal()} className="btn btn-primary flex items-center gap-2">
+          <Plus size={18} /> Add Q&A
+        </button>
       </div>
 
       {loading ? (
@@ -111,12 +138,12 @@ export const AdminQA = () => {
                       {item.status.toUpperCase()}
                     </span>
                   </td>
-                  <td className="p-4 text-right">
-                    <button 
-                      onClick={() => openModal(item)}
-                      className="text-accent hover:text-accent-hover font-medium text-sm"
-                    >
-                      {item.status === 'pending' ? 'Review' : 'Edit'}
+                  <td className="p-4 flex justify-end gap-3">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-800 p-1" title="Edit">
+                      <Edit2 size={18} />
+                    </button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-800 p-1" title="Delete">
+                      <Trash2 size={18} />
                     </button>
                   </td>
                 </tr>
@@ -131,11 +158,11 @@ export const AdminQA = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
-      {selectedItem && (
+      {/* Form Modal */}
+      {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
-            <h2 className="text-xl font-bold mb-4">Review Q&A Submission</h2>
+            <h2 className="text-xl font-bold mb-4">{editingId ? 'Edit Q&A' : 'Add New Q&A'}</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="form-group mb-0">
                 <label className="form-label">Category</label>
@@ -151,7 +178,7 @@ export const AdminQA = () => {
               </div>
               <div className="form-group mb-0">
                 <label className="form-label">Answer</label>
-                <textarea name="answer" className="form-control" rows="6" value={formData.answer} onChange={handleFormChange}></textarea>
+                <textarea name="answer" required className="form-control" rows="6" value={formData.answer} onChange={handleFormChange}></textarea>
               </div>
               <div className="form-group mb-0">
                 <label className="form-label">Status</label>
@@ -164,7 +191,7 @@ export const AdminQA = () => {
               <div className="flex justify-end gap-3 mt-4 pt-4 border-t">
                 <button type="button" onClick={closeModal} className="btn btn-outline text-gray-600 border-gray-300">Cancel</button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>
-                  {submitting ? 'Saving...' : 'Save Changes'}
+                  {submitting ? 'Saving...' : 'Save Q&A'}
                 </button>
               </div>
             </form>

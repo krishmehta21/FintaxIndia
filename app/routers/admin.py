@@ -61,7 +61,6 @@ def admin_patch_qa(qa_id: UUID, qa_in: QAAdminUpdate):
     if not data:
         raise HTTPException(status_code=400, detail="No fields provided for update")
 
-    # Automatically set published_at when status becomes 'published'
     if data.get("status") == "published":
         data["published_at"] = datetime.now(timezone.utc).isoformat()
 
@@ -69,6 +68,19 @@ def admin_patch_qa(qa_id: UUID, qa_in: QAAdminUpdate):
     if not response.data:
         raise HTTPException(status_code=404, detail="Q&A item not found")
     return response.data[0]
+
+@router.post("/qa", response_model=QAResponse, status_code=status.HTTP_201_CREATED)
+def admin_create_qa(qa_in: QAAdminCreate):
+    data = qa_in.model_dump(mode="json")
+    if data.get("status") == "published":
+        data["published_at"] = datetime.now(timezone.utc).isoformat()
+    response = supabase.table("qa_items").insert(data).execute()
+    return response.data[0]
+
+@router.delete("/qa/{qa_id}", status_code=status.HTTP_204_NO_CONTENT)
+def admin_delete_qa(qa_id: UUID):
+    supabase.table("qa_items").delete().eq("id", str(qa_id)).execute()
+    return None
 
 
 # --- Testimonials Admin Endpoints ---
