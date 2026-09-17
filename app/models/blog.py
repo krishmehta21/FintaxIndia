@@ -43,6 +43,9 @@ class BlogPostResponse(BaseModel):
     cover_image_url: Optional[str]
     category: BlogCategory
     status: BlogStatus
+    view_count: int = 0
+    helpful_count: int = 0
+    not_helpful_count: int = 0
     published_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
@@ -58,6 +61,7 @@ class BlogPostListResponse(BaseModel):
     cover_image_url: Optional[str]
     category: BlogCategory
     status: BlogStatus
+    view_count: int = 0
     published_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime

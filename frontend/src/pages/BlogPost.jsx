@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { api } from '../api';
-import { Spinner } from '../components/Spinner';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { ChevronLeft } from 'lucide-react';
+
+import React, { useEffect, useState, useRef } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { api } from "../api";
+import { Spinner } from "../components/Spinner";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { ChevronLeft, Eye, ThumbsUp, ThumbsDown } from "lucide-react";
 
 const getReadTime = (text) => {
   if (!text) return 1;
@@ -17,7 +18,11 @@ export const BlogPost = () => {
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [vote, setVote] = useState(null);
+  const [voting, setVoting] = useState(false);
+  
+  const viewLogged = useRef(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -25,15 +30,50 @@ export const BlogPost = () => {
       try {
         const data = await api.getBlogPost(slug);
         setPost(data);
+        
+        // Log view (debounce via ref and sessionStorage)
+        const viewKey = `viewed_${slug}`;
+        if (!viewLogged.current && !sessionStorage.getItem(viewKey)) {
+          viewLogged.current = true;
+          sessionStorage.setItem(viewKey, "true");
+          try {
+            await api.incrementBlogView(slug);
+            // Optionally optimistic update local state, though not strictly required
+            setPost(prev => prev ? { ...prev, view_count: (prev.view_count || 0) + 1 } : prev);
+          } catch (e) {
+            console.error("Failed to log view", e);
+          }
+        }
+        
+        // Check vote status
+        const savedVote = localStorage.getItem(`voted_${slug}`);
+        if (savedVote) {
+          setVote(savedVote);
+        }
       } catch (err) {
         console.error(err);
-        setError('Article not found or is no longer available.');
+        setError("Article not found or is no longer available.");
       } finally {
         setLoading(false);
       }
     };
     fetchPost();
   }, [slug]);
+
+  const handleVote = async (isHelpful) => {
+    if (vote || voting) return;
+    setVoting(true);
+    try {
+      await api.voteBlogPost(slug, isHelpful);
+      const voteType = isHelpful ? "up" : "down";
+      setVote(voteType);
+      localStorage.setItem(`voted_${slug}`, voteType);
+    } catch (err) {
+      console.error("Failed to vote", err);
+    } finally {
+      setVoting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -48,7 +88,7 @@ export const BlogPost = () => {
       <div className="min-h-[70vh] flex flex-col items-center justify-center bg-gray-50 px-4 text-center">
         <h1 className="text-3xl font-bold text-primary mb-4">Post Not Found</h1>
         <p className="text-gray-600 mb-8">{error}</p>
-        <button onClick={() => navigate('/blog')} className="btn btn-primary">
+        <button onClick={() => navigate("/blog")} className="btn btn-primary">
           Return to Blog
         </button>
       </div>
@@ -82,10 +122,12 @@ export const BlogPost = () => {
             {post.title}
           </h1>
           
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center justify-center gap-4 text-sm text-gray-500 flex-wrap">
             <span className="font-semibold text-gray-900">{post.author}</span>
-            <span>•</span>
-            <span>{new Date(post.published_at || post.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+            <span className="hidden sm:inline"></span>
+            <span>{new Date(post.published_at || post.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+            <span className="hidden sm:inline"></span>
+            <span className="flex items-center gap-1.5"><Eye size={16} /> {post.view_count || 0} Views</span>
           </div>
         </header>
 
@@ -101,7 +143,7 @@ export const BlogPost = () => {
         )}
 
         {/* Content */}
-        <article className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">
+        <article className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12 mb-12">
           <div className="prose prose-lg prose-navy max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {post.content}
@@ -109,7 +151,37 @@ export const BlogPost = () => {
           </div>
         </article>
 
+        {/* Feedback Widget */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center flex flex-col items-center">
+          <h3 className="text-xl font-bold text-primary mb-2">Was this article helpful?</h3>
+          <p className="text-gray-500 mb-6 text-sm">Let us know so we can improve our content.</p>
+          
+          {vote ? (
+            <div className="flex items-center gap-2 text-green-600 bg-green-50 px-4 py-2 rounded-lg font-medium">
+              <ThumbsUp size={18} /> Thank you for your feedback!
+            </div>
+          ) : (
+            <div className="flex gap-4">
+              <button 
+                onClick={() => handleVote(true)} 
+                disabled={voting}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-accent hover:text-accent transition-colors disabled:opacity-50"
+              >
+                <ThumbsUp size={18} /> Yes
+              </button>
+              <button 
+                onClick={() => handleVote(false)} 
+                disabled={voting}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-red-500 transition-colors disabled:opacity-50"
+              >
+                <ThumbsDown size={18} /> No
+              </button>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
 };
+

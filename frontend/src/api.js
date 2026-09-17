@@ -40,8 +40,6 @@ export const api = {
     if (!res.ok) throw new Error('Failed to submit contact form');
     return res.json();
   },
-
-  // Blog
   getBlogPosts: async (category = '', page = 1) => {
     const params = new URLSearchParams();
     if (category) params.append('category', category);
@@ -55,6 +53,25 @@ export const api = {
   getBlogPost: async (slug) => {
     const res = await fetch(`${BASE_URL}/blog/${slug}`);
     if (!res.ok) throw new Error('Failed to fetch blog post');
+    return res.json();
+  },
+  getFeaturedBlogPosts: async () => {
+    const res = await fetch(`${BASE_URL}/blog/featured/top`);
+    if (!res.ok) throw new Error('Failed to fetch featured posts');
+    return res.json();
+  },
+  incrementBlogView: async (slug) => {
+    const res = await fetch(`${BASE_URL}/blog/${slug}/view`, { method: 'POST' });
+    if (!res.ok) throw new Error('Failed to increment view count');
+    return res.json();
+  },
+  voteBlogPost: async (slug, is_helpful) => {
+    const res = await fetch(`${BASE_URL}/blog/${slug}/vote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_helpful })
+    });
+    if (!res.ok) throw new Error('Failed to vote');
     return res.json();
   }
 };
