@@ -14,6 +14,8 @@ const QA = React.lazy(() => import('./pages/QA').then(m => ({ default: m.QA })))
 const Contact = React.lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
 const Blog = React.lazy(() => import('./pages/Blog').then(m => ({ default: m.Blog })));
 const BlogPost = React.lazy(() => import('./pages/BlogPost').then(m => ({ default: m.BlogPost })));
+const Privacy = React.lazy(() => import('./pages/Privacy').then(m => ({ default: m.Privacy })));
+const Terms = React.lazy(() => import('./pages/Terms').then(m => ({ default: m.Terms })));
 const NotFound = React.lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 // Admin Pages
@@ -52,6 +54,8 @@ function App() {
               <Route path="contact" element={<Contact />} />
               <Route path="blog" element={<Blog />} />
               <Route path="blog/:slug" element={<BlogPost />} />
+              <Route path="privacy" element={<Privacy />} />
+              <Route path="terms" element={<Terms />} />
               <Route path="*" element={<NotFound />} />
             </Route>
 

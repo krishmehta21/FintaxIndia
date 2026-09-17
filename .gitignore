@@ -17,3 +17,7 @@ venv.bak/
 .idea/
 *.swp
 *.swo
+
+# Local agent skills & metadata
+.agents/
+skills-lock.json

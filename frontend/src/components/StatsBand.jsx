@@ -37,12 +37,12 @@ export const StatsBand = () => {
   ];
 
   return (
-    <div ref={ref} className="bg-primary text-white py-16">
-      <div className="container">
-        <div className="grid md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-gray-800">
+    <div ref={ref} className="bg-primary text-white py-4 sm:py-6 md:py-8">
+      <div className="container px-3 sm:px-6">
+        <div className="grid grid-cols-3 gap-1 sm:gap-6 text-center divide-x divide-white/10">
           {stats.map((stat, index) => (
-            <div key={index} className="px-4 py-6 md:py-0">
-              <div className="text-4xl md:text-5xl font-heading font-bold text-accent mb-2">
+            <div key={index} className="px-1.5 sm:px-4 py-1 md:py-0">
+              <div className="text-2xl sm:text-4xl md:text-5xl font-heading font-bold text-accent mb-0.5 sm:mb-2">
                 <Counter 
                   end={stat.value} 
                   duration={2.5} 
@@ -50,7 +50,7 @@ export const StatsBand = () => {
                   active={inView}
                 />
               </div>
-              <div className="text-gray-300 font-medium tracking-wide uppercase text-sm">
+              <div className="text-gray-300 font-medium tracking-tight sm:tracking-wide uppercase text-[10px] sm:text-xs md:text-sm">
                 {stat.label}
               </div>
             </div>

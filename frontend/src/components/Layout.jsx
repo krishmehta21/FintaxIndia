@@ -185,8 +185,15 @@ export const Layout = () => {
             </div>
           </div>
           
-          <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/10 gap-4 text-xs text-gray-500 font-medium">
-            <p>&copy; {new Date().getFullYear()} FinTax India. Regulated Financial Advisory.</p>
+          {/* Regulatory & Statutory Disclaimer Notice */}
+          <div className="pt-8 pb-4 border-t border-white/10 text-[11px] text-gray-400 leading-relaxed">
+            <p>
+              <strong className="text-gray-300">Regulatory Notice:</strong> FinTax India provides independent financial, taxation, and corporate advisory services. In compliance with the Chartered Accountants Act, 1949 and ICAI guidelines, this website serves strictly informational purposes and does not solicit work or advertise professional services. Tax assessments, audit selections, and refund approvals remain the sovereign discretion of the Income Tax Department, GSTN, and the Ministry of Corporate Affairs.
+            </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row justify-between items-center pt-4 border-t border-white/5 gap-4 text-xs text-gray-500 font-medium">
+            <p>&copy; {new Date().getFullYear()} FinTax India. Professional Financial & Tax Advisory.</p>
             <div className="flex gap-6">
               <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
