@@ -77,8 +77,8 @@ export const BlogPost = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Spinner size={50} />
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner size={40} />
       </div>
     );
   }

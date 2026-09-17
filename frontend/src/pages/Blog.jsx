@@ -3,6 +3,20 @@ import { Link } from 'react-router-dom';
 import { api } from '../api';
 import { Spinner } from '../components/Spinner';
 import { Eye, Sparkles, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "tween", duration: 0.3 } }
+};
 
 const CATEGORIES = [
   'All',
@@ -87,51 +101,53 @@ export const Blog = () => {
   };
 
   const renderCard = (post, isFeatured = false) => (
-    <Link to={`/blog/${post.slug}`} key={post.id} className={`group bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full ${isFeatured ? 'md:flex-row md:h-auto' : ''}`}>
-      {post.cover_image_url ? (
-        <div className={`overflow-hidden shrink-0 ${isFeatured ? 'md:w-5/12 h-64 md:h-auto' : 'h-48'}`}>
-          <img 
-            src={post.cover_image_url} 
-            alt={post.title} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-          />
-        </div>
-      ) : (
-        <div className={`bg-primary/5 flex items-center justify-center border-b md:border-b-0 md:border-r border-gray-100 shrink-0 ${isFeatured ? 'md:w-5/12 h-64 md:h-auto' : 'h-48'}`}>
-          <span className="text-primary/20 text-4xl font-bold">FinTax</span>
-        </div>
-      )}
-      <div className={`flex flex-col flex-grow ${isFeatured ? 'p-8 md:p-10 lg:p-12 justify-center' : 'p-6'}`}>
-        <div className="flex items-center gap-3 mb-4">
-          <span className="px-2.5 py-1 bg-accent/10 border border-accent/30 text-primary text-xs font-bold uppercase tracking-wider rounded-md">
-            {post.category}
-          </span>
-          <span className="text-xs text-gray-400 font-medium">
-            {getReadTime(post.excerpt)} min read
-          </span>
-        </div>
-        <h2 className={`${isFeatured ? 'text-2xl md:text-3xl mb-4' : 'text-xl mb-3'} font-bold text-primary group-hover:text-accent transition-colors line-clamp-2`}>
-          {post.title}
-        </h2>
-        <p className={`text-gray-600 ${isFeatured ? 'text-base md:text-lg line-clamp-3 mb-8' : 'text-sm line-clamp-3 mb-6'} flex-grow`}>
-          {post.excerpt}
-        </p>
-        <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
-          <div className="text-sm font-medium text-gray-900">{post.author}</div>
-          <div className="flex items-center gap-4 text-xs text-gray-500">
-            <span className="flex items-center gap-1">
-              <Eye size={14} /> {post.view_count || 0}
-            </span>
-            <span>{new Date(post.published_at || post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+    <motion.div key={post.id} variants={itemVariants} className={isFeatured ? '' : 'h-full'}>
+      <Link to={`/blog/${post.slug}`} className={`group bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full ${isFeatured ? 'md:flex-row md:h-auto' : ''}`}>
+        {post.cover_image_url ? (
+          <div className={`overflow-hidden shrink-0 ${isFeatured ? 'md:w-5/12 h-64 md:h-auto' : 'h-48'}`}>
+            <img 
+              src={post.cover_image_url} 
+              alt={post.title} 
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            />
           </div>
-        </div>
-        {isFeatured && (
-           <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-accent group-hover:text-primary transition-colors">
-             Read Article <ArrowRight size={16} />
-           </div>
+        ) : (
+          <div className={`bg-primary/5 flex items-center justify-center border-b md:border-b-0 md:border-r border-gray-100 shrink-0 ${isFeatured ? 'md:w-5/12 h-64 md:h-auto' : 'h-48'}`}>
+            <span className="text-primary/20 text-4xl font-bold">FinTax</span>
+          </div>
         )}
-      </div>
-    </Link>
+        <div className={`flex flex-col flex-grow ${isFeatured ? 'p-8 md:p-10 lg:p-12 justify-center' : 'p-6'}`}>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="px-2.5 py-1 bg-accent/10 border border-accent/30 text-primary text-xs font-bold uppercase tracking-wider rounded-md">
+              {post.category}
+            </span>
+            <span className="text-xs text-gray-400 font-medium">
+              {getReadTime(post.excerpt)} min read
+            </span>
+          </div>
+          <h2 className={`${isFeatured ? 'text-2xl md:text-3xl mb-4' : 'text-xl mb-3'} font-bold text-primary group-hover:text-accent transition-colors line-clamp-2`}>
+            {post.title}
+          </h2>
+          <p className={`text-gray-600 ${isFeatured ? 'text-base md:text-lg line-clamp-3 mb-8' : 'text-sm line-clamp-3 mb-6'} flex-grow`}>
+            {post.excerpt}
+          </p>
+          <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
+            <div className="text-sm font-medium text-gray-900">{post.author}</div>
+            <div className="flex items-center gap-4 text-xs text-gray-500">
+              <span className="flex items-center gap-1">
+                <Eye size={14} /> {post.view_count || 0}
+              </span>
+              <span>{new Date(post.published_at || post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            </div>
+          </div>
+          {isFeatured && (
+             <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-accent group-hover:text-primary transition-colors">
+               Read Article <ArrowRight size={16} />
+             </div>
+          )}
+        </div>
+      </Link>
+    </motion.div>
   );
 
   return (
@@ -154,14 +170,14 @@ export const Blog = () => {
               Top Reads
               <div className="h-px bg-gray-200 flex-grow ml-4"></div>
             </h2>
-            <div className="flex flex-col gap-8">
+            <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-8">
               {/* Top Featured Post */}
               {renderCard(featuredPosts[0], true)}
               {/* Next 2 Featured Posts side by side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {featuredPosts.slice(1, 3).map(post => renderCard(post, false))}
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
 
@@ -192,9 +208,9 @@ export const Blog = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               {posts.map(post => renderCard(post, false))}
-            </div>
+            </motion.div>
             
             {hasMore && (
               <div className="flex justify-center mt-8">
