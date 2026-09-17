@@ -121,6 +121,10 @@ export const AdminBlog = () => {
     if (forceStatus) {
       dataToSubmit.status = forceStatus;
     }
+    
+    if (!dataToSubmit.cover_image_url) {
+      dataToSubmit.cover_image_url = 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80';
+    }
 
     try {
       if (editingId) {
@@ -132,7 +136,7 @@ export const AdminBlog = () => {
       fetchPosts();
     } catch (err) {
       console.error(err);
-      alert('Failed to save blog post');
+      alert(`Failed to save blog post: ${err.message}`);
     } finally {
       setSubmitting(false);
     }

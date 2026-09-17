@@ -135,7 +135,11 @@ export const adminApi = {
       headers: await getAuthHeaders(),
       body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Failed to create blog post');
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.detail ? (Array.isArray(err.detail) ? err.detail[0].msg : err.detail) : 'Failed to create blog post';
+      throw new Error(msg);
+    }
     return res.json();
   },
   updateBlogPost: async (id, data) => {
@@ -144,7 +148,11 @@ export const adminApi = {
       headers: await getAuthHeaders(),
       body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Failed to update blog post');
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.detail ? (Array.isArray(err.detail) ? err.detail[0].msg : err.detail) : 'Failed to update blog post';
+      throw new Error(msg);
+    }
     return res.json();
   },
   deleteBlogPost: async (id) => {
