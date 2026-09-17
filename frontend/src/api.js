@@ -48,15 +48,13 @@ export const api = {
     if (page) params.append('page', page);
     const queryString = params.toString() ? '?' + params.toString() : '';
     
-    const res = await fetch(\\/blog\\);
+    const res = await fetch(`${BASE_URL}/blog${queryString}`);
     if (!res.ok) throw new Error('Failed to fetch blog posts');
     return res.json();
   },
   getBlogPost: async (slug) => {
-    const res = await fetch(\\/blog/\\);
+    const res = await fetch(`${BASE_URL}/blog/${slug}`);
     if (!res.ok) throw new Error('Failed to fetch blog post');
     return res.json();
   }
 };
-
-

@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
 import { NavLink, Link, Outlet } from 'react-router-dom';
-import { Menu, X, Landmark } from 'lucide-react';
+import { Menu, X, Landmark, ChevronDown } from 'lucide-react';
 import { CustomLogo } from './Logo';
-import { motion, useScroll, useMotionValueEvent, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent, useReducedMotion } from 'framer-motion';
 
 const MotionNavLink = motion(NavLink);
 const MotionLink = motion(Link);
 
+const SERVICES_LIST = [
+  { title: "Income Tax Filing", slug: "income-tax-filing" },
+  { title: "Financial Services", slug: "financial-services" },
+  { title: "GST Filing", slug: "gst-filing" },
+  { title: "Loan Services", slug: "loan-services" },
+  { title: "Insurance Services", slug: "insurance-services" },
+  { title: "Corporate Services", slug: "corporate-services" },
+];
+
 export const Layout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+  
   const { scrollY, scrollYProgress } = useScroll();
   const shouldReduceMotion = useReducedMotion();
 
@@ -17,7 +28,10 @@ export const Layout = () => {
     setIsScrolled(latest > 50);
   });
 
-  const closeMenu = () => setMenuOpen(false);
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setServicesDropdownOpen(false);
+  };
 
   const magneticProps = shouldReduceMotion ? {} : {
     transition: { type: "tween", duration: 0.2 }
@@ -56,11 +70,64 @@ export const Layout = () => {
           <div className={`${menuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row items-start md:items-center absolute md:relative top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none p-6 md:p-0 gap-6 md:gap-8 border-b md:border-b-0 border-gray-100 z-50`}>
             <MotionNavLink to="/" end className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>Home</MotionNavLink>
             <MotionNavLink to="/about" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>About</MotionNavLink>
-            <MotionNavLink to="/services" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>Services</MotionNavLink>
+            
+            {/* Services Dropdown */}
+            <div 
+              className="relative group w-full md:w-auto"
+              onMouseEnter={() => window.innerWidth >= 768 && setServicesDropdownOpen(true)}
+              onMouseLeave={() => window.innerWidth >= 768 && setServicesDropdownOpen(false)}
+            >
+              <div className="flex items-center justify-between md:justify-start gap-1">
+                <MotionNavLink 
+                  to="/services" 
+                  className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} 
+                  onClick={closeMenu} 
+                  {...magneticProps}
+                >
+                  Services
+                </MotionNavLink>
+                <button 
+                  className="p-1 md:pointer-events-none text-primary focus:outline-none"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (window.innerWidth < 768) {
+                      setServicesDropdownOpen(!servicesDropdownOpen);
+                    }
+                  }}
+                  aria-label="Toggle services menu"
+                >
+                  <ChevronDown size={16} className={`transition-transform duration-200 ${servicesDropdownOpen ? 'rotate-180' : 'md:group-hover:rotate-180'}`} />
+                </button>
+              </div>
+
+              {/* Dropdown Menu */}
+              <AnimatePresence>
+                {servicesDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, height: 0 }}
+                    animate={{ opacity: 1, y: 0, height: "auto" }}
+                    exit={{ opacity: 0, y: 10, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="md:absolute md:top-full md:left-0 md:mt-6 md:w-56 bg-white md:shadow-xl md:rounded-md md:border border-gray-100 overflow-hidden flex flex-col md:pt-2 md:pb-2 w-full pl-4 md:pl-0 z-50"
+                  >
+                    {SERVICES_LIST.map((service) => (
+                      <Link 
+                        key={service.slug} 
+                        to={`/services/${service.slug}`}
+                        className="block px-4 py-3 md:py-2 text-sm font-medium text-gray-600 hover:text-accent md:hover:bg-gray-50 transition-colors"
+                        onClick={closeMenu}
+                      >
+                        {service.title}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <MotionNavLink to="/qa" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>Q&A</MotionNavLink>
             <MotionNavLink to="/blog" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>Blog</MotionNavLink>
-            <MotionNavLink to="/contact" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeMenu} {...magneticProps}>Contact</MotionNavLink>
-            <MotionLink to="/contact" className="md:ml-2 px-5 py-2 text-sm font-semibold border border-primary/20 text-primary hover:bg-primary/5 rounded-md transition-colors whitespace-nowrap" onClick={closeMenu} {...magneticProps}>
+            <MotionLink to="/contact" className="md:ml-2 px-5 py-2.5 text-sm font-semibold border border-primary/20 text-primary hover:bg-primary/5 rounded-md transition-colors whitespace-nowrap" onClick={closeMenu} {...magneticProps}>
               Book a Consultation
             </MotionLink>
           </div>
